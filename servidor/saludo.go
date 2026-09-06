@@ -4,7 +4,7 @@ import (
 	"fmt"
 	//manejo de errores
 	"errors"
-	//
+	//randoms de math
 	"math/rand"
 )
 
