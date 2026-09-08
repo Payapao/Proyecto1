@@ -17,6 +17,20 @@ import (
 	"net"
 )
 
+//Estructura que contenga todas las salas
+type Servidor struct{
+	salas map[string]*Sala
+	candado sync.Mutex
+}
+
+//Crea el servidor
+func NuevoServidor(nombre string) *Servidor{
+	return &Servidor{
+		salas: make(map[string]*Sala)
+	}
+}
+
+//Función para indicar como usar el programa
 func uso(){
 	fmt.Println("go run main.go" + "puerto")
 	os.Exit(1)
@@ -52,23 +66,29 @@ func main(){
 
 	ftm.Println("Servidor encendido correctamente")
 
+	//Crea el servidor
+	servidor := NuevoServidor("Payapao's server")
+	
 	//Crea la sala donde estan todos los clientes
-	clientes := NuevaSala()
+	clientes, _ := NuevaSala("General")
+
+	//Se agrega la sala grupal al servidor
+	map[clientes.getNombre()]clientes
 
 	
 	//Activar servidor para aceptar clientes
 	for{
 		//Intenta conectar un cliente
-		cliente, err := escucha.Accept()
+		conexion, err := escucha.Accept()
 		if err != nil{
 			log.Fatal("No se pudo recibir al cliente")
 			//Para que no intente agregar al cliente en estado de error
 			continue
 		}
 
-		clientes := sala
-
-		//Agrega el cliente a un map
+		//Crea un cliente
+		cliente := NuevoCliente("aqui va el nombre", conexion)
+		//Agrega el cliente al servidor
 		clientes.AgregaCliente(cliente)
 		
 	}
