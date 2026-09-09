@@ -6,21 +6,11 @@ import{
 	
 }
 
-//Enum para go
-type estados int
-
-//Estados validos para los clientes
-const{
-	ACTIVE Estados = iota
-	AWAY //Estados = iota
-	BUSY //Puede omitirse el = iota para los siguientes elementos
-}
-
 //Creamos la estructura del cliente
 type Cliente struct{
 	conexion net.Conn
 	usuario string
-	estado estados	
+	estado Estados	
 }
 
 //Setters y getters para clientes
