@@ -27,8 +27,9 @@ func (c Cliente) getEstado() estados{
 	return c.estado
 }
 
+//Define el estado de un cliente
 func (c *Cliente) setEstado(s string) error{
-	switch s {
+	switch e {
 	case "ACTIVE":
 		c.estado* = ACTIVE
 	case "AWAY":
@@ -38,7 +39,7 @@ func (c *Cliente) setEstado(s string) error{
 	default:
 		return errors.New("El estado no es valido")
 	}
-	return nil
+	return errors.New("Estado invalido")
 }
 
 //Función para crear nuevos clientes
