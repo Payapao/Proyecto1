@@ -1,5 +1,10 @@
 package main
 
+import(
+	//Pra manejo de errores
+	"errors"
+)
+
 //Enum para go
 type Estados int
 
@@ -11,14 +16,14 @@ const (
 )
 
 //Funcion to String para los estados
-func toString(e Estado)(string, error){
+func toStringEstados(e Estados)(string, error){
 	s := ""
 	switch e {
-	case "ACTIVE":
+	case 0:
 		s = "ACTIVE"
-	case "AWAY":
+	case 1:
 		s = "AWAY"
-	case "BUSY":
+	case 2:
 		s = "BUSY"
 	default:
 		return s , errors.New("El estado no es valido")

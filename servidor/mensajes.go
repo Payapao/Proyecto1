@@ -1,7 +1,8 @@
 package main
 
 import (
-	"encoding/json"
+	//Para el protocolo
+	//"encoding/json"
 )
 
 type Mensaje struct{

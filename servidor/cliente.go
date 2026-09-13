@@ -24,7 +24,7 @@ func (c Cliente) getUsuario() string{
 	return c.usuario
 }
 
-func (c Cliente) getEstado() estados{
+func (c Cliente) getEstado() Estados{
 	return c.estado
 }
 
@@ -40,22 +40,7 @@ func (c *Cliente) setEstado(s string) error{
 	default:
 		return errors.New("El estado no es valido")
 	}
-	return errors.New("Estado invalido")
-}
-
-//Función para crear nuevos clientes
-
-func NuevoCliente(nombre string, conexion net.Conn) (*Cliente, error){
-	_, existe := general[nombre]
-	if existe{
-		return nil, errors.New("El nombre de usuario ya esta ocupado")
-	}
-
-	return &Cliente{
-		conexion: conexion,
-		nombre: nombre,
-		estado: ACTIVE,
-	}, nil
+	return nil
 }
 
 

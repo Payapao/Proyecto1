@@ -1,10 +1,15 @@
 package main
 
+import(
+	//Manejo de errores
+	"errors"
+)
+
 type Respuesta int
 
 const(
 	//RESPONSE
-	SUCCESS Operacion = iota //La operación se ejecuto exitosamente
+	SUCCESS Respuesta = iota //La operación se ejecuto exitosamente
 	USER_ALREADY_EXISTS //El nombre se usuario ya exite
 	NO_SUCH_USER //El usuario no existe
 	ROOM_ALREADY_EXISTS //El nombre de la sala ya existe
@@ -16,29 +21,29 @@ const(
 )
 
 //Funcion to String para las respuestas
-func toString(r Respuesta)(string, error){
+func toStringRespuestas(r Respuesta)(string, error){
 	s := ""
 	switch r {
-	case "SUCCESS": //La operación se ejecuto exitosamente
-		r = "SUCCESS"
-	case "USER_ALREADY_EXISTS": //El nombre se usuario ya exite
-		r = "USER_ALREADY_EXISTS"
-	case "NO_SUCH_USER": //El usuario no existe
-		r = "NO_SUCH_USER"
-	case "ROOM_ALREADY_EXISTS": //El nombre de la sala ya existe
-		r = "ROOM_ALREADY_EXISTS"
-	case "NO_SUCH_ROOM": //La sala no exite
-		r = "NO_SUCH_ROOM"
-	case "NOT_INVITED": //El usuario no ha sido invitado a la sala
-		r = "NOT_INVITED"
-	case "NOT_JOINED": //El usuario no se ha unido a la sala
-		r = "NOT_JOINED"
-	case "NOT_IDENTIFIED": //Usuario no identificado
-		r = "NOT_IDENTIFIED"
-	case "INVALID": //Operación no reconocida
-		r = "INVALID"
+	case 0: //La operación se ejecuto exitosamente
+		s = "SUCCESS"
+	case 1: //El nombre se usuario ya exite
+		s = "USER_ALREADY_EXISTS"
+	case 2: //El usuario no existe
+		s = "NO_SUCH_USER"
+	case 3: //El nombre de la sala ya existe
+		s = "ROOM_ALREADY_EXISTS"
+	case 4: //La sala no exite
+		s = "NO_SUCH_ROOM"
+	case 5: //El usuario no ha sido invitado a la sala
+		s = "NOT_INVITED"
+	case 6: //El usuario no se ha unido a la sala
+		s = "NOT_JOINED"
+	case 7: //Usuario no identificado
+		s = "NOT_IDENTIFIED"
+	case 8: //Operación no reconocida
+		s = "INVALID"
 	default:
-		return s , error.New("El tipo es invalido")
+		return s , errors.New("El tipo es invalido")
 	}
 	return s, nil
 }

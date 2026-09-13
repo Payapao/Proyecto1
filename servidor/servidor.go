@@ -1,9 +1,15 @@
 package main
 
+import(
+	//Sincronización de goroutines
+	"sync"
+	//Manejo de errores
+	"errors"
+)
 
 //Estructura que contenga todas las salas
 type Servidor struct{
-	Salas map[string]*Sala
+	salas map[string]*Sala
 	candado sync.Mutex
 }
 
@@ -15,20 +21,22 @@ func NuevoServidor(nombre string) *Servidor{
 }
 
 //Función para crear y agregar salas al servidor
-func AgregaSala(nombre string) error{
-	candado.Lock()
-	defer candado.Unlock()
+func (s *Servidor) NuevaSala(nombre string) (*Sala, error){
+	s.candado.Lock()
+	defer s.candado.Unlock()
 
-	_, existe := salas[nombre]
-	if existe{
+	_, existe := s.salas[nombre]
+	if existe {
 		return nil, errors.New("El nombre de la sala ya existe")
 	}
 
-	salas[nombre] = &Sala{
+	nuevaSala := &Sala{
 		nombre: nombre,
-		clientes: make(map[net.Conn]*Cliente),
+		clientes: make(map[string]*Cliente),
 	}
-	
-	return nil
+
+	s.salas[nombre] = nuevaSala
+
+	return nuevaSala, nil
 	
 }

@@ -50,21 +50,27 @@ func main(){
 	}
 	
 	//Intenta conectar con el puerto dado
-	escucha, err := net.Listen("tcp", puerto)
+	escucha, err := net.Listen("tcp", os.Args[1])
 	if err != nil{
-		log.Fatal("No se pudo abrir el puerto: " +  puerto)
+		log.Fatal("No se pudo abrir el puerto: ",  puerto)
+		uso()
 	}
 
 	//Asegura de que se libere el puerto cuando se termine el programa
 	defer escucha.Close()
 
-	ftm.Println("Servidor encendido correctamente")
+	fmt.Println("Servidor encendido correctamente")
 
 	//Crea el servidor
 	servidor := NuevoServidor("Payapao's server")
 	
 	//Crea la sala donde estan todos los clientes
-	servidor.AgregaSala("General")
+	general, err := servidor.NuevaSala("General")
+	if err != nil{
+		log.Fatal("Error al crear la sala")
+		uso()
+	}
+	
 
 	
 	//Activar servidor para aceptar clientes
@@ -77,15 +83,14 @@ func main(){
 			continue
 		}
 
-		//Crea un cliente
-		cliente, err := NuevoCliente("aqui va el nombre", conexion)
-		if err != nil {
-		 	log.Fatal("El nombre de usuario" + " ya existe en el servidor ")
+		//Crea y agrega un cliente
+		_, error := general.NuevoCliente("aqui va el nombre", conexion)
+		if error != nil {
+		 	log.Fatal("El nombre: " + " ya existe en el servidor.")
+			//se envia mensaje al cliente
 			continue		
 		}
 		
-		//Agrega el cliente al servidor
-		clientes.AgregaCliente(cliente)
 		
 	}
 	
