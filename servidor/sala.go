@@ -41,15 +41,11 @@ func (s Sala) getClientes() map[string]string{
 	return arregloClientes
 }
 
-func (s *Sala) setNombre(nuevoNombre string) {
-	//Bloqueamos la escritura y lectura
-	s.candado.Lock()
-	defer s.candado.Unlock()
-	s.nombre = nuevoNombre
-}
-
 //Función para crear nuevos clientes
 func (s *Sala) NuevoCliente(nombre string, conexion net.Conn) (*Cliente, error){
+	s.candado.Lock()
+	defer s.candado.Unlock()
+	
 	_, existe := s.clientes[nombre]
 	if existe{
 		return nil, errors.New("El nombre de usuario ya esta ocupado")

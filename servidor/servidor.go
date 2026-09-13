@@ -9,13 +9,26 @@ import(
 
 //Estructura que contenga todas las salas
 type Servidor struct{
+	nombre string
 	salas map[string]*Sala
-	candado sync.Mutex
+	candado sync.RWMutex
+}
+
+//Regresa el nombre del servidor
+func (s *Servidor)getNombre() string {
+	return s.nombre
+}
+
+func (s *Servidor) getSalas() map[string]*Sala {
+	s.candado.RLock()
+	defer s.candado.RUnlock()
+	return s.salas
 }
 
 //Crea el servidor
-func NuevoServidor(nombre string) *Servidor{
+func NuevoServidor(s string) *Servidor {
 	return &Servidor{
+		nombre: s,
 		salas: make(map[string]*Sala),
 	}
 }

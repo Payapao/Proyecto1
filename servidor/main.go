@@ -50,7 +50,7 @@ func main(){
 	}
 	
 	//Intenta conectar con el puerto dado
-	escucha, err := net.Listen("tcp", os.Args[1])
+	escucha, err := net.Listen("tcp", ":"+os.Args[1])
 	if err != nil{
 		log.Fatal("No se pudo abrir el puerto: ",  puerto)
 		uso()
@@ -59,10 +59,11 @@ func main(){
 	//Asegura de que se libere el puerto cuando se termine el programa
 	defer escucha.Close()
 
-	fmt.Println("Servidor encendido correctamente")
 
 	//Crea el servidor
 	servidor := NuevoServidor("Payapao's server")
+
+	fmt.Println("Servidor " + servidor.getNombre() + " encendido correctamente")
 	
 	//Crea la sala donde estan todos los clientes
 	general, err := servidor.NuevaSala("General")
