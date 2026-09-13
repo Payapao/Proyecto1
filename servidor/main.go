@@ -17,22 +17,10 @@ import (
 	"net"
 )
 
-//Estructura que contenga todas las salas
-type Servidor struct{
-	salas map[string]*Sala
-	candado sync.Mutex
-}
-
-//Crea el servidor
-func NuevoServidor(nombre string) *Servidor{
-	return &Servidor{
-		salas: make(map[string]*Sala)
-	}
-}
 
 //Función para indicar como usar el programa
 func uso(){
-	fmt.Println("go run main.go" + "puerto")
+	fmt.Println("go run main.go" + "puerto" + " (1024-65535)")
 	os.Exit(1)
 }
 
@@ -54,11 +42,17 @@ func main(){
 		log.Fatal("El parametro recivido no es un puerto")
 		uso()
 	}
+
+	//Verifica que sea un puerto valido
+	if puerto < 1024 || puerto > 65535 {
+		log.Fatal("El puerto no es valido")
+		uso()
+	}
 	
 	//Intenta conectar con el puerto dado
 	escucha, err := net.Listen("tcp", puerto)
 	if err != nil{
-		log.Fatal("No se pudo abrir el puerto: " puerto)
+		log.Fatal("No se pudo abrir el puerto: " +  puerto)
 	}
 
 	//Asegura de que se libere el puerto cuando se termine el programa
@@ -70,10 +64,7 @@ func main(){
 	servidor := NuevoServidor("Payapao's server")
 	
 	//Crea la sala donde estan todos los clientes
-	clientes, _ := NuevaSala("General")
-
-	//Se agrega la sala grupal al servidor
-	map[clientes.getNombre()]clientes
+	servidor.AgregaSala("General")
 
 	
 	//Activar servidor para aceptar clientes
@@ -87,7 +78,12 @@ func main(){
 		}
 
 		//Crea un cliente
-		cliente := NuevoCliente("aqui va el nombre", conexion)
+		cliente, err := NuevoCliente("aqui va el nombre", conexion)
+		if err != nil {
+		 	log.Fatal("El nombre de usuario" + " ya existe en el servidor ")
+			continue		
+		}
+		
 		//Agrega el cliente al servidor
 		clientes.AgregaCliente(cliente)
 		

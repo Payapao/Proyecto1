@@ -2,7 +2,7 @@ package main
 
 type Tipo int
 
-const{
+const(
 	//Del usuario
 	IDENTIFY Tipo = iota //Identifica al usuario con el servidor
 	STATUS //Cambia el estado de un usuario
@@ -31,7 +31,7 @@ const{
 	ROOM_TEXT_FROM //Se envia un mensaje en especifico a algun cuarto
 	LEFT_ROOM //Cuando un usuario abandona un cuarto
 	DISCONNECTED //Avisa que un usuario se desconecto
-}
+)
 
 //Funcion to String para los tipos
 func toString(t Tipo)(string, error){

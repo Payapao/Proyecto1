@@ -1,14 +1,14 @@
-package estado
+package main
 
 //Enum para go
 type Estados int
 
 //Estados validos para los clientes
-const{
+const (
 	ACTIVE Estados = iota
 	AWAY //Estados = iota
 	BUSY //Puede omitirse el = iota para los siguientes elementos
-}
+)
 
 //Funcion to String para los estados
 func toString(e Estado)(string, error){

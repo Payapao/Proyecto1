@@ -1,10 +1,11 @@
 package main
 
-import{
+import(
 	//manejo de errores
 	"errors"
-	
-}
+	//Comunicación en red
+	"net"
+)
 
 //Creamos la estructura del cliente
 type Cliente struct{
@@ -29,13 +30,13 @@ func (c Cliente) getEstado() estados{
 
 //Define el estado de un cliente
 func (c *Cliente) setEstado(s string) error{
-	switch e {
+	switch s {
 	case "ACTIVE":
-		c.estado* = ACTIVE
+		c.estado = ACTIVE
 	case "AWAY":
-		c.estado* = AWAY
+		c.estado = AWAY
 	case "BUSY":
-		c.estado* = BUSY
+		c.estado = BUSY
 	default:
 		return errors.New("El estado no es valido")
 	}
@@ -45,7 +46,7 @@ func (c *Cliente) setEstado(s string) error{
 //Función para crear nuevos clientes
 
 func NuevoCliente(nombre string, conexion net.Conn) (*Cliente, error){
-	_, existe := servidor[nombre]
+	_, existe := general[nombre]
 	if existe{
 		return nil, errors.New("El nombre de usuario ya esta ocupado")
 	}
@@ -53,7 +54,7 @@ func NuevoCliente(nombre string, conexion net.Conn) (*Cliente, error){
 	return &Cliente{
 		conexion: conexion,
 		nombre: nombre,
-		estado: ACTIVE
+		estado: ACTIVE,
 	}, nil
 }
 

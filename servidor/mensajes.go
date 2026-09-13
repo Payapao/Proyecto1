@@ -1,8 +1,8 @@
 package main
 
-import {
+import (
 	"encoding/json"
-}
+)
 
 type Mensaje struct{
 	Type Tipo `json: "type"`

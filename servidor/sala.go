@@ -1,10 +1,5 @@
 package main
 
-import{
-
-	
-}
-
 
 //Estructura de las salas
 type Sala struct{
@@ -30,22 +25,5 @@ func (s Sala) getClientes() []string{
 
 func (s *Sala) setNombre(nuevoNombre string) {
 	s.nombre = nuevoNombre
-}
-
-
-//Funcion para crear salas
-func NuevaSala(nombre string) (*Sala, error){
-	candado.Lock()
-	defer candado.Unlock()
-
-	_, existe := a.salas[nombre]
-	if existe{
-		return nil, errors.New("El nombre de la sala ya existe")
-	}
-	
-	return &Sala{
-		nombre: nombre,
-		clientes: make(map[net.Conn]*Cliente)
-	}, nil
 }
 
