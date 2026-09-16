@@ -3,8 +3,6 @@ package main
 import(
 	//Sincronización de goroutines
 	"sync"
-	//Conexión con red
-	"net"
 	//Manejo de errores
 	"errors"
 )
@@ -41,23 +39,21 @@ func (s Sala) getClientes() map[string]string{
 	return arregloClientes
 }
 
-//Función para crear nuevos clientes
-func (s *Sala) NuevoCliente(nombre string, conexion net.Conn) (*Cliente, error){
+//Función para agregar clientes a la sala
+func (s *Sala) AgregaCliente(cliente *Cliente) (error){
 	s.candado.Lock()
 	defer s.candado.Unlock()
+
+	usuarios := servidor.getUsuarios()
+
+	_, existe := usuarios[cliente.getUsuario()]
 	
-	_, existe := s.clientes[nombre]
-	if existe{
-		return nil, errors.New("El nombre de usuario ya esta ocupado")
+	if !existe{
+		return errors.New("El usuario no se encuentra en el servidor")
 	}
 
-	nuevoCliente := &Cliente{
-		conexion: conexion,
-		usuario: nombre,
-		estado: ACTIVE,
-	}
 
-	s.clientes[nombre] = nuevoCliente
-	return nuevoCliente, nil
+	s.clientes[cliente.getUsuario()] = cliente
+	return nil
 }
 

@@ -63,14 +63,7 @@ func main(){
 	//Crea el servidor
 	servidor := NuevoServidor("Payapao's server")
 
-	fmt.Println("Servidor " + servidor.getNombre() + " encendido correctamente")
-	
-	//Crea la sala donde estan todos los clientes
-	general, err := servidor.NuevaSala("General")
-	if err != nil{
-		log.Fatal("Error al crear la sala")
-		uso()
-	}
+	fmt.Println("Servidor ", servidor.getNombre(),  " encendido correctamente en el puerto", puerto)
 	
 
 	
@@ -84,13 +77,8 @@ func main(){
 			continue
 		}
 
-		//Crea y agrega un cliente
-		_, error := general.NuevoCliente("aqui va el nombre", conexion)
-		if error != nil {
-		 	log.Fatal("El nombre: " + " ya existe en el servidor.")
-			//se envia mensaje al cliente
-			continue		
-		}
+		//Crea un hilo y pasa la conexión para esperar que se identifique
+		go servidor.Temporal(conexion)
 		
 		
 	}
