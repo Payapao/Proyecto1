@@ -19,6 +19,19 @@ const(
 	NOT_IDENTIFIED //Usuario no identificado
 )
 
+//Define como se va a escribir el tipo Respuesta
+func (r Respuesta) MarchalJSON()([]byte, error){
+	resp, err := r.toStringRespuestas()
+	//No debe pasar
+	if err != nil {
+		return nil, err
+	}
+	//Le agrega las comillas para el json
+	respuesta = fmt.Sprintf(`"%s"`, resp)
+	
+	return []byte(respuesta), nil
+}
+
 //Funcion to String para las respuestas
 func (r Respuesta)toStringRespuestas()(string, error){
 	s := ""

@@ -10,7 +10,7 @@ type Mensaje struct{
 	Roomname string `json:"roomname,omitempty"`
 	Username string `json:"username,omitempty"`
 	Usernames string `json:"usernames,omitempty"`
-	Status int `json:"status,omitempty"`
+	Status Estados `json:"status,omitempty"`
 	Operation Tipo `json:"operation,omitempty"`
 	Result Respuesta `json:"result,omitempty"`
 	Text string `json:"text,omitempty"`

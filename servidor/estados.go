@@ -15,8 +15,21 @@ const (
 	BUSY //Puede omitirse el = iota para los siguientes elementos
 )
 
+//Define como se va a escribir el tipo Estados
+func (e Estados) MarchalJSON()([]byte, error){
+	est, err := r.toStringRespuestas()
+	//No debe pasar
+	if err != nil {
+		return nil, err
+	}
+	//Le agrega las comillas para el json
+	estado = fmt.Sprintf(`"%s"`, est)
+	
+	return []byte(estado), nil
+}
+
 //Funcion to String para los estados
-func toStringEstados(e Estados)(string, error){
+func (e Estados) toStringEstados()(string, error){
 	s := ""
 	switch e {
 	case 0:

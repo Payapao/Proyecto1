@@ -38,8 +38,21 @@ const(
 	RESPONSE //Respuesta del servidor
 )
 
+//Define como se va a escribir el tipo Tipo
+func (t Tipo) MarchalJSON()([]byte, error){
+	tip, err := t.toStringTipos()
+	//No debe pasar
+	if err != nil {
+		return nil, err
+	}
+	//Le agrega las comillas para el json
+	tipo = fmt.Sprintf(`"%s"`, tip)
+	
+	return []byte(tipo), nil
+}
+
 //Funcion to String para los tipos
-func toStringTipos(t Tipo)(string, error){
+func (t Tipo) toStringTipos()(string, error){
 	s := ""
 	switch t {
 	case 0: //Identifica al usuario con el servidor
