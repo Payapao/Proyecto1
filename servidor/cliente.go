@@ -1,6 +1,8 @@
 package main
 
 import(
+	//Sincronización de goroutines
+	"sync"
 	//manejo de errores
 	"errors"
 	//Comunicación en red
@@ -17,6 +19,7 @@ type Cliente struct{
 	//Para que cada cliente envie sus propios mensajes
 	codificador *json.Encoder
 	decodificador *json.Decoder
+	candado sync.RWMutex
 }
 
 //Setters y getters para clientes

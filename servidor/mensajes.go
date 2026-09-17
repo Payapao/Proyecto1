@@ -26,17 +26,17 @@ func FabricaMensaje(tipo Tipo) Mensaje {
 }
 
 //Metodos para agregar otros parametros de ser necesario
-func (m Mensaje) Roomname(s string) Mensaje{
+func (m Mensaje) roomname(s string) Mensaje{
 	m.Roomname = s
 	return m
 }
 
-func (m Mensaje) Username(s string) Mensaje{
+func (m Mensaje) username(s string) Mensaje{
 	m.Username = s
 	return m
 }
 
-func (m Mensaje) Usernames(clientes map[string]*Cliente) Mensaje {
+func (m Mensaje) usernames(clientes map[string]*Cliente) Mensaje {
 	/*	var s string.Builder
 	s.WriteString("[")
 	for user , _ := range clientes {
@@ -49,32 +49,32 @@ func (m Mensaje) Usernames(clientes map[string]*Cliente) Mensaje {
 	return m
 }
 
-func (m Mensaje) Status(e Estados) Mensaje {
+func (m Mensaje) status(e Estados) Mensaje {
 	m.Status = e
 	return m
 }
 
-func (m Mensaje) Operation(t Tipo) Mensaje {
+func (m Mensaje) operation(t Tipo) Mensaje {
 	m.Operation = t
 	return m
 }
 
-func (m Mensaje) Result(r Respuesta) Mensaje {
+func (m Mensaje) result(r Respuesta) Mensaje {
 	m.Result = r
 	return m
 }
 
-func (m Mensaje) Text(s string) Mensaje {
+func (m Mensaje) text(s string) Mensaje {
 	m.Text = s
 	return m
 }
 
-func (m Mensaje) Users(clientes map[string]*Cliente) Mensaje {
+func (m Mensaje) users(clientes map[string]*Cliente) Mensaje {
 	m.Users = clientes
 	return m
 }
 
-func (m Mensje) Extra(s string) Mensaje {
+func (m Mensaje) extra(s string) Mensaje {
 	m.Extra = s
 	return m
 }

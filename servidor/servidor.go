@@ -68,6 +68,16 @@ func (s *Servidor) NuevaSala(nombre string) (*Sala, error){
 	return nuevaSala, nil	
 }
 
+//Fucnión par eliminar salas, unicamente se llama con salas existentes
+func (s *Servidor) EliminaSala(sala *Sala){
+	s.candado.Lock()
+	defer s.candado.Unlock()
+
+	//Elimina la sala del servidor
+	delete(s.salas, sala.getNombre())
+	
+}
+
 //Metodo para agregar un usuario al servidor
 func (s *Servidor) NuevoCliente(nombre string, conexion net.Conn, c *json.Encoder, d *json.Decoder) (*Cliente, error) {
 	s.candado.Lock()
@@ -97,19 +107,19 @@ func (s *Servidor) EliminaCliente(cliente *Cliente){
 	//Elimina al usuario del servidor
 
 	//Envia mensje de usuario desconectado a todos los clientes
-	for _, cliente := range s.usuarios {
-		cliente.EnviaMensaje()
+	for _, c := range s.usuarios {
+		c.EnviaMensaje(FabricaMensaje(DISCONNECT).username(cliente.getUsuario()))
 	}
 
 	//Verifica si el usuario estaba en alguna sala
 	for _, sala := range s.salas{
 		if sala.Existe(cliente) {
 			//Si era el unico en la sala elimina la sala
-			if sala.len(clientes) == 1 {
+			if len(sala.clientes) == 1 {
 				s.EliminaSala(sala)
 			}else{
 				//Si no manda llamar el metodo correspondiente
-				sala.EliminaCliente(cliente *Cliente)
+				sala.EliminaCliente(cliente)
 			}
 		}
 	}
@@ -143,12 +153,10 @@ func (s *Servidor) Temporal(conexion net.Conn){
 		return
 	}
 
-	//Bloquea la escritura mientras se recorre la estructura
-	s.candado.RLock()
-	_, existe := s.usuarios[nombre]
-	s.candado.RUnlock()
-	//Si ya existe un usuario con ese nombre
-	if existe {
+	//Manda llamar el metodo NuevoCliente para agregarlo a la lista de usuarios del servidor
+	_, e := s.NuevoCliente(nombre, conexion, codificador, decodificador)
+
+	if e != nil {
 		//Manda mensaje de usuario repetido
 		codificador.Encode(Mensaje{Type: RESPONSE, Operation: IDENTIFY, Result: USER_ALREADY_EXISTS, Extra: nombre })
 		//Desconecta al cliente
@@ -156,19 +164,18 @@ func (s *Servidor) Temporal(conexion net.Conn){
 		return
 	}
 
-	//Manda llamar el metodo NuevoCliente para agregarlo a la lista de usuarios del servidor
-	_, err := s.NuevoCliente(nombre, conexion, decodificador, codificador)
-
 	s.candado.RLock()
 	for usuario, cliente := range s.usuarios {
 		if usuario != nombre {
 			//Envia mensaje de nuevo usuario
-			cliente.EnviaMensaje(mensaje)
+			cliente.EnviaMensaje(FabricaMensaje(NEW_USER).username(nombre))
 		}else {
 			//Envia mensaje de identificación valida
-			cliente.EnviaMensaje(mensaje)
+			cliente.EnviaMensaje(FabricaMensaje(RESPONSE).operation(IDENTIFY).result(SUCCESS).extra(nombre))
 		}
 	}
 	s.candado.RUnlock()
+
+	//Lamar al ciclo infinito del cliente
 	
 }

@@ -3,8 +3,7 @@ package main
 import(
 	//Sincronización de goroutines
 	"sync"
-	//Manejo de errores
-	"errors"
+
 )
 
 
@@ -72,10 +71,11 @@ func (s *Sala) EliminaCliente(cliente *Cliente){
 	defer s.candado.Unlock()
 	
 	//Elimina al usuario de la sala
+	delete(s.clientes, cliente.getUsuario())
 
-	//Envia mensaje de que el usuario ah dejado la sala
+	//Envia mensaje de que el usuario ah dejado la sala a cada usuario
 	for _ , cliente := range s.clientes {
-		cliente.EnviaMensaje()
+		cliente.EnviaMensaje(FabricaMensaje(LEFT_ROOM).roomname(s.getNombre()).username(cliente.getUsuario()))
 	}
 }
 
