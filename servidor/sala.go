@@ -33,7 +33,7 @@ func (s Sala) getClientes() map[string]string{
 	
 	for usuario, cliente := range s.clientes {
 		//No puede pasar el error
-		estado, _ := toStringEstados(cliente.getEstado())
+		estado, _ := cliente.getEstado().toStringEstados()
 		
 		arregloClientes[usuario] = estado
 
@@ -43,7 +43,8 @@ func (s Sala) getClientes() map[string]string{
 
 //Nos dice si un usuario se encuentra en la sala
 func (s *Sala) Existe(cliente *Cliente) bool {
-	_, existe := s.getClientes()
+	clientes := s.getClientes()
+	_, existe := clientes[cliente.getUsuario()]
 	if existe {
 		return true
 	}

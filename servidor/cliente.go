@@ -48,4 +48,15 @@ func (c *Cliente) setEstado(s string) error{
 	return nil
 }
 
+//Envia mensaje al cliente
+func (c *Cliente) EnviaMensaje(mensaje Mensaje) {
+	c.candado.Lock()
+	defer c.candado.Unlock()
+
+	err := c.codificador.Encode(mensaje)
+	if err != nil {
+		c.conexion.Close()
+	}
+	
+}
 

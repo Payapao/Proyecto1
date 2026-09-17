@@ -44,7 +44,7 @@ func NuevoServidor(s string) *Servidor {
 	return &Servidor{
 		nombre: s,
 		salas: make(map[string]*Sala),
-		usuarios: make(map[string]*Cliente)
+		usuarios: make(map[string]*Cliente),
 	}
 }
 
@@ -107,9 +107,8 @@ func (s *Servidor) EliminaCliente(cliente *Cliente){
 			//Si era el unico en la sala elimina la sala
 			if sala.len(clientes) == 1 {
 				s.EliminaSala(sala)
-			}
-			//Si no manda llamar el metodo correspondiente
-			else{
+			}else{
+				//Si no manda llamar el metodo correspondiente
 				sala.EliminaCliente(cliente *Cliente)
 			}
 		}
@@ -164,10 +163,10 @@ func (s *Servidor) Temporal(conexion net.Conn){
 	for usuario, cliente := range s.usuarios {
 		if usuario != nombre {
 			//Envia mensaje de nuevo usuario
-			cliente.EnviaMensaje()
+			cliente.EnviaMensaje(mensaje)
 		}else {
 			//Envia mensaje de identificación valida
-			cliente.EnviaMensaje()
+			cliente.EnviaMensaje(mensaje)
 		}
 	}
 	s.candado.RUnlock()

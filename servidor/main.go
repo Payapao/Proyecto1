@@ -1,6 +1,7 @@
 package main
 
 import (
+	//Formato del texto
 	"fmt"
 	//si estuvieran en carpetas distintas
 	//nombreDeLaCarpeta/NombreDeLaFuncion(parametrosDeLaFuncion)

@@ -3,6 +3,8 @@ package main
 import(
 	//Manejo de errores
 	"errors"
+	//Formato del texto
+	"fmt"
 )
 
 type Respuesta int
@@ -20,20 +22,20 @@ const(
 )
 
 //Define como se va a escribir el tipo Respuesta
-func (r Respuesta) MarchalJSON()([]byte, error){
+func (r Respuesta) MarshalJSON()([]byte, error){
 	resp, err := r.toStringRespuestas()
 	//No debe pasar
 	if err != nil {
 		return nil, err
 	}
 	//Le agrega las comillas para el json
-	respuesta = fmt.Sprintf(`"%s"`, resp)
+	respuesta := fmt.Sprintf(`"%s"`, resp)
 	
 	return []byte(respuesta), nil
 }
 
 //Funcion to String para las respuestas
-func (r Respuesta)toStringRespuestas()(string, error){
+func (r Respuesta) toStringRespuestas()(string, error){
 	s := ""
 	switch r {
 	case 0: //La operación se ejecuto exitosamente

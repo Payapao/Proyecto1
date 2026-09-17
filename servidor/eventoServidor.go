@@ -1,7 +1,10 @@
 package main
 
 import(
+	//Errores
 	"errors"
+	//Formato del texto
+	"fmt"
 )
 
 type Tipo int
@@ -39,14 +42,14 @@ const(
 )
 
 //Define como se va a escribir el tipo Tipo
-func (t Tipo) MarchalJSON()([]byte, error){
+func (t Tipo) MarshalJSON()([]byte, error){
 	tip, err := t.toStringTipos()
 	//No debe pasar
 	if err != nil {
 		return nil, err
 	}
 	//Le agrega las comillas para el json
-	tipo = fmt.Sprintf(`"%s"`, tip)
+	tipo := fmt.Sprintf(`"%s"`, tip)
 	
 	return []byte(tipo), nil
 }
