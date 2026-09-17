@@ -7,6 +7,10 @@ import(
 	"errors"
 	//Conexión en la red
 	"net"
+	//para usar el paquete de strings
+	"strings"
+	//Protocolo
+	"encoding/json"
 )
 
 //Estructura que contenga todas las salas
@@ -40,6 +44,7 @@ func NuevoServidor(s string) *Servidor {
 	return &Servidor{
 		nombre: s,
 		salas: make(map[string]*Sala),
+		usuarios: make(map[string]*Cliente)
 	}
 }
 
@@ -64,7 +69,7 @@ func (s *Servidor) NuevaSala(nombre string) (*Sala, error){
 }
 
 //Metodo para agregar un usuario al servidor
-func (s *Servidor) NuevoCliente(nombre string, conexion net.Conn) (*Cliente, error) {
+func (s *Servidor) NuevoCliente(nombre string, conexion net.Conn, c *json.Encoder, d *json.Decoder) (*Cliente, error) {
 	s.candado.Lock()
 	defer s.candado.Unlock()
 
@@ -77,17 +82,94 @@ func (s *Servidor) NuevoCliente(nombre string, conexion net.Conn) (*Cliente, err
 		conexion: conexion,
 		usuario: nombre,
 		estado: ACTIVE,
+		codificador: c,
+		decodificador: d,
 	}
 	s.usuarios[nombre] = nuevoCliente
 	return nuevoCliente, nil
 }
 
-func (s *Servidor) Temporal(conexion net.Conn){
-	//Asegura desconectar al cliente
-	defer conexion.Close()
+//Metodo para eliminar un cliente
+func (s *Servidor) EliminaCliente(cliente *Cliente){
+	s.candado.Lock()
+	defer s.candado.Unlock()
 
-	//Recibe el json de identificación
+	//Elimina al usuario del servidor
+
+	//Envia mensje de usuario desconectado a todos los clientes
+	for _, cliente := range s.usuarios {
+		cliente.EnviaMensaje()
+	}
+
+	//Verifica si el usuario estaba en alguna sala
+	for _, sala := range s.salas{
+		if sala.Existe(cliente) {
+			//Si era el unico en la sala elimina la sala
+			if sala.len(clientes) == 1 {
+				s.EliminaSala(sala)
+			}
+			//Si no manda llamar el metodo correspondiente
+			else{
+				sala.EliminaCliente(cliente *Cliente)
+			}
+		}
+	}
+}
+
+func (s *Servidor) Temporal(conexion net.Conn){
+
+	//Decodificador y codificador para que cada cliente pueda leer y escribir en su propio hilo
+	decodificador := json.NewDecoder(conexion)
+	codificador := json.NewEncoder(conexion)
+
+	//Creamos la variable que va a guardar el json
+	var identificacion Mensaje
+	err := decodificador.Decode(&identificacion)
+	if err != nil{
+		//Manda mensaje de Json invalido
+		codificador.Encode(Mensaje{Type: RESPONSE, Operation: INVALID, Result: NOT_IDENTIFIED})
+		//Desconecta al cliente
+		conexion.Close()
+		return	
+	}
+
+	//Nombre que se quiere poner el usuario
+	nombre := strings.TrimSpace(identificacion.Username)
+
+	if identificacion.Type != IDENTIFY || nombre == "" || len(nombre) > 8 {
+		//Manda mensaje de usuario no identificado
+		codificador.Encode(Mensaje{Type: RESPONSE, Operation: INVALID, Result: NOT_IDENTIFIED})
+		//Desconecta al cliente
+		conexion.Close()
+		return
+	}
+
+	//Bloquea la escritura mientras se recorre la estructura
+	s.candado.RLock()
+	_, existe := s.usuarios[nombre]
+	s.candado.RUnlock()
+	//Si ya existe un usuario con ese nombre
+	if existe {
+		//Manda mensaje de usuario repetido
+		codificador.Encode(Mensaje{Type: RESPONSE, Operation: IDENTIFY, Result: USER_ALREADY_EXISTS, Extra: nombre })
+		//Desconecta al cliente
+		conexion.Close()
+		return
+	}
 
 	//Manda llamar el metodo NuevoCliente para agregarlo a la lista de usuarios del servidor
+	_, err := s.NuevoCliente(nombre, conexion, decodificador, codificador)
+
+	s.candado.RLock()
+	for usuario, cliente := range s.usuarios {
+		if usuario != nombre {
+			//Envia mensaje de nuevo usuario
+			cliente.EnviaMensaje()
+		}else {
+			//Envia mensaje de identificación valida
+			cliente.EnviaMensaje()
+		}
+	}
+	s.candado.RUnlock()
 	
 }

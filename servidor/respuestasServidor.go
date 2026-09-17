@@ -17,11 +17,10 @@ const(
 	NOT_INVITED //El usuario no ha sido invitado a la sala
 	NOT_JOINED //El usuario no se ha unido a la sala
 	NOT_IDENTIFIED //Usuario no identificado
-	INVALID //Operación no reconocida
 )
 
 //Funcion to String para las respuestas
-func toStringRespuestas(r Respuesta)(string, error){
+func (r Respuesta)toStringRespuestas()(string, error){
 	s := ""
 	switch r {
 	case 0: //La operación se ejecuto exitosamente
@@ -40,8 +39,6 @@ func toStringRespuestas(r Respuesta)(string, error){
 		s = "NOT_JOINED"
 	case 7: //Usuario no identificado
 		s = "NOT_IDENTIFIED"
-	case 8: //Operación no reconocida
-		s = "INVALID"
 	default:
 		return s , errors.New("El tipo es invalido")
 	}

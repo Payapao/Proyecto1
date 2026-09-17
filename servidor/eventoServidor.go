@@ -33,6 +33,9 @@ const(
 	ROOM_TEXT_FROM //Se envia un mensaje en especifico a algun cuarto
 	LEFT_ROOM //Cuando un usuario abandona un cuarto
 	DISCONNECTED //Avisa que un usuario se desconecto
+	INVALID //Operación no reconocida
+	
+	RESPONSE //Respuesta del servidor
 )
 
 //Funcion to String para los tipos
@@ -85,6 +88,10 @@ func toStringTipos(t Tipo)(string, error){
 		s = "LEFT_ROOM"
 	case 22: //Avisa que un usuario se desconecto un usuario
 		s = "DISCONNECTED"
+	case 23: //Operación no reconocida
+		s = "INVALID"
+	case 24: //Respuesta del servidor
+		s = "RESPONSE" 
 	default:
 		return s, errors.New("El tipo es invalido")
 	}

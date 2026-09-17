@@ -6,16 +6,16 @@ import (
 )
 
 type Mensaje struct{
-	Type int `json: "type"`
-	Roomname string `json: roomname`
-	Username string `json: username`
-	Usernames string `json: usernames`
-	Status int `json: status`
-	Operation Tipo `json: operation`
-	Result int `json: result`
-	Text string `json: text`
-	Users string `json: users`
-	Extra string `json: extra`
+	Type Tipo `json:"type,omitempty"`
+	Roomname string `json:"roomname,omitempty"`
+	Username string `json:"username,omitempty"`
+	Usernames string `json:"usernames,omitempty"`
+	Status int `json:"status,omitempty"`
+	Operation Tipo `json:"operation,omitempty"`
+	Result Respuesta `json:"result,omitempty"`
+	Text string `json:"text,omitempty"`
+	Users string `json:"users,omitempty"`
+	Extra string `json:"extra,omitempty"`
 }
 
 

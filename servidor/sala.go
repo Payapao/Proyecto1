@@ -10,7 +10,9 @@ import(
 
 //Estructura de las salas
 type Sala struct{
+	//Nombre de la sala
 	nombre string
+	//Clientes en la sala
 	clientes map[string]*Cliente
 	//Permite lecturas simultaneas
 	candado sync.RWMutex
@@ -39,21 +41,40 @@ func (s Sala) getClientes() map[string]string{
 	return arregloClientes
 }
 
-//Función para agregar clientes a la sala
+//Nos dice si un usuario se encuentra en la sala
+func (s *Sala) Existe(cliente *Cliente) bool {
+	_, existe := s.getClientes()
+	if existe {
+		return true
+	}
+	return false
+}
+
+//Función para agregar clientes a la sala -Es necesario pasar un usuario valido
 func (s *Sala) AgregaCliente(cliente *Cliente) (error){
 	s.candado.Lock()
 	defer s.candado.Unlock()
 
-	usuarios := servidor.getUsuarios()
-
-	_, existe := usuarios[cliente.getUsuario()]
-	
-	if !existe{
-		return errors.New("El usuario no se encuentra en el servidor")
+	//Verifica si el usuario ya esta en la sala y lo ignora
+	if s.Existe(cliente){
+		return nil
 	}
 
-
+	//Agrega al usuario en la sala
 	s.clientes[cliente.getUsuario()] = cliente
 	return nil
+}
+
+//Función para eliminar un cliente de una sala
+func (s *Sala) EliminaCliente(cliente *Cliente){
+	s.candado.Lock()
+	defer s.candado.Unlock()
+	
+	//Elimina al usuario de la sala
+
+	//Envia mensaje de que el usuario ah dejado la sala
+	for _ , cliente := range s.clientes {
+		cliente.EnviaMensaje()
+	}
 }
 

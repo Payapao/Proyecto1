@@ -40,7 +40,7 @@ func Saludos(names []string)(map[string]string, error){
 
 	//range regresa 2 valores, indice y valor
 	//for index, name := range names
-	for _, name := range names{
+	for _, name := range names {
 		mensaje, err := Saludo(name)
 		if err != nil{
 			return nil, err

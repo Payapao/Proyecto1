@@ -5,13 +5,18 @@ import(
 	"errors"
 	//Comunicación en red
 	"net"
+	//Protocolo
+	"encoding/json"
 )
 
 //Creamos la estructura del cliente
 type Cliente struct{
 	conexion net.Conn
 	usuario string
-	estado Estados	
+	estado Estados
+	//Para que cada cliente envie sus propios mensajes
+	codificador *json.Encoder
+	decodificador *json.Decoder
 }
 
 //Setters y getters para clientes
