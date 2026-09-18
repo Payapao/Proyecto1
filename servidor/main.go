@@ -64,7 +64,7 @@ func main(){
 	//Crea el servidor
 	servidor := NuevoServidor("Payapao's server")
 
-	fmt.Println("Servidor ", servidor.getNombre(),  " encendido correctamente en el puerto", puerto)
+	fmt.Println("Servidor", servidor.getNombre(),  "encendido correctamente en el puerto", puerto)
 	
 
 	

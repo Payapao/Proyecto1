@@ -154,7 +154,7 @@ func (s *Servidor) Temporal(conexion net.Conn){
 	}
 
 	//Manda llamar el metodo NuevoCliente para agregarlo a la lista de usuarios del servidor
-	_, e := s.NuevoCliente(nombre, conexion, codificador, decodificador)
+	c, e := s.NuevoCliente(nombre, conexion, codificador, decodificador)
 
 	if e != nil {
 		//Manda mensaje de usuario repetido
@@ -177,5 +177,46 @@ func (s *Servidor) Temporal(conexion net.Conn){
 	s.candado.RUnlock()
 
 	//Lamar al ciclo infinito del cliente
+	s.EscuchaCliente(c)
 	
+}
+
+//Ciclo para que se escuchen todos los mensajes de un cliente
+func (s *Servidor) EscuchaCliente(c *Cliente){
+	for{
+		var mensaje Mensaje
+		err := c.decodificador.Decode(&mensaje)
+		if err != nil {
+			//Manda mensaje de Json invalido
+			c.codificador.Encode(Mensaje{Type: RESPONSE, Operation: INVALID, Result: NOT_IDENTIFIED})
+			//Desconecta al cliente
+			c.conexion.Close()
+			return	
+		}
+
+		s.ProcesaMensaje(mensaje, c)	
+	}
+	
+}
+
+//Define que hace el mensaje que envio el cliente
+func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
+	switch m.Type {
+	case STATUS:
+		//Actualiza el estado
+		errEstado := c.setEstado(m.Status)
+		//Checar si el estado es valido --Esto no sale en el protocolo y talvez sea un error
+		//Si es un error entonces regresar status a Estado y cambiar set estado para que reciba estados en vez de strings
+		if errEstado != nil{
+			c.EnviaMensaje(FabricaMensaje(RESPONSE).operation(STATUS).result(NOT_IDENTIFIED))
+		}
+		
+		//Manda el mensaje valido para el cliente
+		//Manda la actualización para el resto de clientes
+		//Deberia hacer un metodo envia para no repetir el for?
+	default:
+		//Nunca deberia pasar este default
+		return
+	}
+	return
 }

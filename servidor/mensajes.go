@@ -10,7 +10,7 @@ type Mensaje struct{
 	Roomname string `json:"roomname,omitempty"`
 	Username string `json:"username,omitempty"`
 	Usernames map[string]*Cliente `json:"usernames,omitempty"`
-	Status Estados `json:"status,omitempty"`
+	Status string `json:"status,omitempty"`
 	Operation Tipo `json:"operation,omitempty"`
 	Result Respuesta `json:"result,omitempty"`
 	Text string `json:"text,omitempty"`
@@ -50,7 +50,7 @@ func (m Mensaje) usernames(clientes map[string]*Cliente) Mensaje {
 }
 
 func (m Mensaje) status(e Estados) Mensaje {
-	m.Status = e
+	m.Status, _ = e.toStringEstados()
 	return m
 }
 
