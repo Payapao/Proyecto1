@@ -9,12 +9,12 @@ type Mensaje struct{
 	Type Tipo `json:"type,omitempty"`
 	Roomname string `json:"roomname,omitempty"`
 	Username string `json:"username,omitempty"`
-	Usernames map[string]*Cliente `json:"usernames,omitempty"`
-	Status string `json:"status,omitempty"`
+	Usernames map[string]string `json:"usernames,omitempty"`
+	Status Estados `json:"status,omitempty"`
 	Operation Tipo `json:"operation,omitempty"`
 	Result Respuesta `json:"result,omitempty"`
 	Text string `json:"text,omitempty"`
-	Users map[string]*Cliente `json:"users,omitempty"`
+	Users map[string]string `json:"users,omitempty"`
 	Extra string `json:"extra,omitempty"`
 }
 
@@ -36,7 +36,7 @@ func (m Mensaje) username(s string) Mensaje{
 	return m
 }
 
-func (m Mensaje) usernames(clientes map[string]*Cliente) Mensaje {
+func (m Mensaje) usernames(clientes map[string]string) Mensaje {
 	/*	var s string.Builder
 	s.WriteString("[")
 	for user , _ := range clientes {
@@ -50,7 +50,7 @@ func (m Mensaje) usernames(clientes map[string]*Cliente) Mensaje {
 }
 
 func (m Mensaje) status(e Estados) Mensaje {
-	m.Status, _ = e.toStringEstados()
+	m.Status = e
 	return m
 }
 
@@ -69,7 +69,7 @@ func (m Mensaje) text(s string) Mensaje {
 	return m
 }
 
-func (m Mensaje) users(clientes map[string]*Cliente) Mensaje {
+func (m Mensaje) users(clientes map[string]string) Mensaje {
 	m.Users = clientes
 	return m
 }

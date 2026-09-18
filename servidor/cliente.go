@@ -37,13 +37,13 @@ func (c Cliente) getEstado() Estados{
 }
 
 //Define el estado de un cliente
-func (c *Cliente) setEstado(s string) error{
+func (c *Cliente) setEstado(s Estados) error{
 	switch s {
-	case "ACTIVE":
+	case ACTIVE:
 		c.estado = ACTIVE
-	case "AWAY":
+	case AWAY:
 		c.estado = AWAY
-	case "BUSY":
+	case BUSY:
 		c.estado = BUSY
 	default:
 		return errors.New("El estado no es valido")
