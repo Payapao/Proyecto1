@@ -18,9 +18,6 @@ type Sala struct{
 	candado sync.RWMutex
 }
 
-//Regresa la lista de usuarios
-func (s *Sala) 
-
 //Getters y setters
 
 func (s Sala) getNombre() string{
@@ -83,7 +80,7 @@ func (s *Sala) AgregaCliente(cliente *Cliente) {
 
 //Función para eliminar un cliente de una sala
 func (s *Sala) EliminaCliente(cliente *Cliente){
-	if !s.Existe(c){
+	if !s.Existe(cliente){
 		return
 	}
 	s.candado.Lock()
@@ -93,14 +90,14 @@ func (s *Sala) EliminaCliente(cliente *Cliente){
 	delete(s.clientes, cliente.getUsuario())
 
 	//Envia el mensaje de usuario eliminado al resto de la sala
-	mt := FabricaMensaje(LEFT_ROOM).roomname(m.Roomname).username(c.getUsuario())
-	s.EnviaSala(c, nil, mt)
+	mt := FabricaMensaje(LEFT_ROOM).roomname(s.getNombre()).username(cliente.getUsuario())
+	s.EnviaSala(cliente, nil, mt)
 	
 	return
 }
 
 //Envia el mensaje a todos los miembros de la sala
-func (s *Sala) EnviaSala(c *Cliente, mc Mensaje, mt Mensaje){
+func (s *Sala) EnviaSala(c *Cliente, mc *Mensaje, mt *Mensaje){
 	s.candado.RLock()
 	//Si no hay mensaje al propio usuario
 	if mc == nil{

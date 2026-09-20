@@ -21,7 +21,7 @@ const(
 	NEW_ROOM //Crea una sala
 	INVITE //Invita los usuarios a una sala
 	JOIN_ROOM //El usuario se unio a la sala
-	ROOM_USER_LIST //Solicita la lista de usuarios en un cuarto
+	ROOM_USERS //Solicita la lista de usuarios en un cuarto
 	ROOM_TEXT //Manda mensaje dentro de un cuarto
 	LEAVE_ROOM //Para abandonar un cuarto
 	DISCONNECT //Desconecta al usuario
@@ -35,6 +35,7 @@ const(
 	PUBLIC_TEXT_FROM //Algún usuario mando un mensaje publico
 	INVITATION //Algún usuario invita a otro a una sala
 	JOINED_ROOM //Le avisa a los usuarios de la sala que alguien se unio
+	ROOM_USERS_LIST //Regresa la lista de usuarios en un cuarto
 	ROOM_TEXT_FROM //Se envia un mensaje en especifico a algun cuarto
 	LEFT_ROOM //Cuando un usuario abandona un cuarto
 	DISCONNECTED //Avisa que un usuario se desconecto
@@ -96,8 +97,8 @@ func (t Tipo) toStringTipos()(string, error){
 		s = "INVITE"
 	case JOIN_ROOM: //El usuario se unio a la sala
 		s = "JOIN_ROOM"
-	case ROOM_USER_LIST: //Solicita la lista de usuarios en un cuarto
-		s = "ROOM_USER_LIST"
+	case ROOM_USERS: //Solicita la lista de usuarios en un cuarto
+		s = "ROOM_USERS"
 	case ROOM_TEXT: //Manda mensaje dentro de un cuarto
 		s = "ROOM_TEXT"
 	case LEAVE_ROOM: //Para abandonar un cuarto
@@ -120,6 +121,8 @@ func (t Tipo) toStringTipos()(string, error){
 		s = "INVITATION"
 	case JOINED_ROOM: //Le avisa a los usuarios de la sala que alguien se unio
 		s = "JOINED_ROOM"
+	case ROOM_USERS_LIST: //Solicita la lista de usuarios en un cuarto
+		s = "ROOM_USERS_LIST"
 	case ROOM_TEXT_FROM: //Se envia un mensaje en especifico a algun cuarto
 		s = "ROOM_TEXT_FROM"
 	case LEFT_ROOM: //Cuando un usuario abandona un cuarto
@@ -154,8 +157,8 @@ func toIntTipos(s string)(Tipo, error){
 		i = INVITE
 	case "JOIN_ROOM":
 		i = JOIN_ROOM
-	case "ROOM_USER_LIST":
-		i = ROOM_USER_LIST
+	case "ROOM_USERS":
+		i = ROOM_USERS
 	case "ROOM_TEXT":
 		i = ROOM_TEXT
 	case "LEAVE_ROOM":
@@ -178,6 +181,8 @@ func toIntTipos(s string)(Tipo, error){
 		i = INVITATION
 	case "JOINED_ROOM":
 		i = JOINED_ROOM
+	case "ROOM_USERS_LIST":
+		i = ROOM_USERS_LIST
 	case "ROOM_TEXT_FROM":
 		i = ROOM_TEXT_FROM
 	case "LEFT_ROOM":

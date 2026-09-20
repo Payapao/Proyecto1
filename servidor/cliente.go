@@ -52,7 +52,7 @@ func (c *Cliente) setEstado(s Estados) error{
 }
 
 //Envia mensaje al cliente
-func (c *Cliente) EnviaMensaje(mensaje Mensaje) {
+func (c *Cliente) EnviaMensaje(mensaje *Mensaje) {
 	c.candado.Lock()
 	defer c.candado.Unlock()
 

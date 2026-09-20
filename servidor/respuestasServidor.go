@@ -106,7 +106,7 @@ func toIntRespuestas(s string)(Respuesta, error){
 		est = NOT_JOINED
 	case "NOT_IDENTIFIED":
 		est = NOT_IDENTIFIED
-	case "INVALID"
+	case "INVALID":
 		est = INVALID_RESPUESTA
 	default:
 		return est , errors.New("La respuesta es invalida")

@@ -136,7 +136,7 @@ func (s *Servidor) Temporal(conexion net.Conn){
 	err := decodificador.Decode(&identificacion)
 	if err != nil{
 		//Manda mensaje de Json invalido
-		codificador.Encode(Mensaje{Type: RESPONSE, Operation: INVALID_TIPO, Result: INVALID_RESULTADO})
+		codificador.Encode(Mensaje{Type: RESPONSE, Operation: INVALID_TIPO, Result: INVALID_RESPUESTA})
 		//Desconecta al cliente
 		conexion.Close()
 		return	
@@ -181,10 +181,10 @@ func (s *Servidor) EscuchaCliente(c *Cliente){
 		err := c.decodificador.Decode(&mensaje)
 		if err != nil {
 			//Manda mensaje de Json invalido
-			c.codificador.Encode(Mensaje{Type: RESPONSE, Operation: INVALID_TIPO, Result: INVALID_RESULTADO})
+			c.codificador.Encode(Mensaje{Type: RESPONSE, Operation: INVALID_TIPO, Result: INVALID_RESPUESTA})
 			//Desconecta al cliente
 			c.conexion.Close()
-			return	
+			return
 		}
 
 		s.ProcesaMensaje(mensaje, c)	
@@ -213,8 +213,9 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		//Crea el map de los usuarios
 		users := make(map[string]string)
 		s.candado.RLock()
-		for n, cliente := range usuarios {
-			users[n] = cliente.getEstado().toStringEstados()
+		for n, cliente := range s.usuarios {
+			estado, _ := cliente.getEstado().toStringEstados()
+			users[n] = estado
 		}
 		s.candado.RUnlock()
 
@@ -251,7 +252,7 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		//Significa que la sala ya existe y manda el mensaje correspondiente
 		if err != nil {
 			mc := FabricaMensaje(RESPONSE).operation(NEW_ROOM).result(ROOM_ALREADY_EXISTS).extra(m.Roomname)
-			s.EnviaMensaje(c, mc, nil)
+			s.EnviaTodos(c, mc, nil)
 			return
 		}
 
@@ -259,7 +260,8 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		sala.AgregaCliente(c)
 		//Manda el mensaje de confirmación
 		mc := FabricaMensaje(RESPONSE).operation(NEW_ROOM).result(SUCCESS).extra(m.Roomname)
-
+		s.EnviaTodos(c, mc, nil)
+		
 	case INVITE:
 		//Verifica
 		sala := s.Verifica(c, m, INVITE)
@@ -272,7 +274,7 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		}
 
 		//Agrega al cliente en la lista de invitados y envia el mensaje
-		for _, cliente := m.Usernames {
+		for _, cliente := range m.Usernames {
 			sala.Invita(cliente)
 			cliente.EnviaMensaje(FabricaMensaje(INVITATION).username(c.getUsuario()).roomname(m.Roomname))
 		}
@@ -303,7 +305,8 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		users := make(map[string]string)
 		sala.candado.RLock()
 		for n, cliente := range sala.getClientes() {
-			users[n] = cliente.getEstado().toStringEstados()
+			estados, _ := cliente.getEstado().toStringEstados()
+			users[n] = estados
 		}
 		sala.candado.RUnlock()
 
@@ -313,7 +316,10 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 
 	case ROOM_TEXT:
 		//Verifica
-		sala.Verifica(c, m, ROOM_TEXT)
+		sala := s.Verifica(c, m, ROOM_TEXT)
+		if sala == nil {
+			return
+		}
 
 		//Fabrica y envia el mensaje a todos en la sala
 		mt := FabricaMensaje(ROOM_TEXT_FROM).roomname(m.Roomname).username(c.getUsuario()).extra(m.Extra)
@@ -321,14 +327,14 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 
 	case LEAVE_ROOM:
 		//Verifica
-		sala := s.Verifica(s, m, LEAVE_ROOM)
+		sala := s.Verifica(c, m, LEAVE_ROOM)
 		if sala == nil{
 			return	
 		}
 
 		//Si es el unico usuario en la sala elimina la sala
-		if len(sala.getClientes() == 1){
-			s.EliminaSala(c)
+		if len(sala.getClientes()) == 1 {
+			s.EliminaSala(sala)
 		}else{
 			//Si no, elimina al usuario de la sala
 			sala.EliminaCliente(c)
@@ -343,7 +349,7 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 
 		//Elimina al cliente de las salas
 		s.candado.RLock()
-		for _, sala := s.salas {
+		for _, sala := range s.salas {
 			if len(sala.getClientes()) == 1 {
 				s.EliminaSala(sala)
 			} 
@@ -365,10 +371,10 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 }
 
 //Verifica que el usuario pueda hacer lo que quiere hacer en las salas
-func (s *Servidor) Verifica(c *Cliente, m Mensaje, tipo Tipo) s *Sala {
+func (s *Servidor) Verifica(c *Cliente, m Mensaje, tipo Tipo) *Sala {
 	//Verifica que la sala exista
 	sala, existe := s.salas[m.Roomname]
-	if != existe{
+	if !existe{
 		mc := FabricaMensaje(RESPONSE).operation(tipo).result(NO_SUCH_ROOM).extra(m.Roomname)
 		s.EnviaTodos(c, mc, nil)
 		return nil
@@ -391,7 +397,7 @@ func (s *Servidor) Verifica(c *Cliente, m Mensaje, tipo Tipo) s *Sala {
 	case INVITE:
 		for invitado, _ := range m.Usernames {
 			_, e := s.usuarios[invitado]
-			if != e {
+			if ! e {
 				mc := FabricaMensaje(RESPONSE).operation(INVITE).result(NO_SUCH_USER).extra(invitado)
 				s.EnviaTodos(c, mc, nil)
 				return nil
@@ -402,12 +408,12 @@ func (s *Servidor) Verifica(c *Cliente, m Mensaje, tipo Tipo) s *Sala {
 	return sala
 }
 
-func (s *Servidor) EnviaTodos(c *Cliente, mc Mensaje, mt Mensaje){
+func (s *Servidor) EnviaTodos(c *Cliente, mc *Mensaje, mt *Mensaje){
 
 	//Si no hay mensaje al propio usuario
 	if mc == nil{
 		s.candado.RLock()
-		for usuario, cliente := range s.usurios {
+		for usuario, cliente := range s.usuarios {
 			if usuario != c.getUsuario() {
 				cliente.EnviaMensaje(mt)
 			}
@@ -419,7 +425,7 @@ func (s *Servidor) EnviaTodos(c *Cliente, mc Mensaje, mt Mensaje){
 	}else {
 		//Hay mensaje para ambos
 		s.candado.RLock()
-		for usuario, cliente := range s.usurios {
+		for usuario, cliente := range s.usuarios {
 			if usuario == c.getUsuario() {
 				cliente.EnviaMensaje(mc)
 			}else{
