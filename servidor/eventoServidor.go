@@ -25,7 +25,7 @@ const(
 	ROOM_TEXT //Manda mensaje dentro de un cuarto
 	LEAVE_ROOM //Para abandonar un cuarto
 	DISCONNECT //Desconecta al usuario
-	INVALID //Operación no reconocida
+	INVALID_TIPO //Operación no reconocida
 
 	//Del servidor
 	NEW_USER //Se envia a todos los clientes cuando se unio un nuevo usuario
@@ -104,7 +104,7 @@ func (t Tipo) toStringTipos()(string, error){
 		s = "LEAVE_ROOM"
 	case DISCONNECT://Desconecta al usuario
 		s = "DISCONNECT"
-	case INVALID: //Cuando la operación no se reconoce
+	case INVALID_TIPO: //Cuando la operación no se reconoce
 		s = "INVALID"
 	case NEW_USER: //Se unio un nuevo usuario
 		s = "NEW_USER"
@@ -163,7 +163,7 @@ func toIntTipos(s string)(Tipo, error){
 	case "DISCONNECT":
 		i = DISCONNECT
 	case "INVALID":
-		i = INVALID
+		i = INVALID_TIPO
 	case "NEW_USER":
 		i = NEW_USER
 	case "NEW_STATUS":

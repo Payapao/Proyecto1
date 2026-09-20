@@ -21,6 +21,7 @@ const(
 	NOT_INVITED //El usuario no ha sido invitado a la sala
 	NOT_JOINED //El usuario no se ha unido a la sala
 	NOT_IDENTIFIED //Usuario no identificado
+	INVALID_RESPUESTA //Jason invalido
 )
 
 //Define como se va a escribir el tipo Respuesta
@@ -77,6 +78,8 @@ func (r Respuesta) toStringRespuestas()(string, error){
 		s = "NOT_JOINED"
 	case NOT_IDENTIFIED: //Usuario no identificado
 		s = "NOT_IDENTIFIED"
+	case INVALID_RESPUESTA:
+		s = "INVALID" 
 	default:
 		return s , errors.New("La respuesta es invalida")
 	}
@@ -103,6 +106,8 @@ func toIntRespuestas(s string)(Respuesta, error){
 		est = NOT_JOINED
 	case "NOT_IDENTIFIED":
 		est = NOT_IDENTIFIED
+	case "INVALID"
+		est = INVALID_RESPUESTA
 	default:
 		return est , errors.New("La respuesta es invalida")
 	}
