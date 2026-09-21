@@ -1,6 +1,7 @@
 package main
 
 import(
+	"fmt"
 	//Sincronización de goroutines
 	"sync"
 	//Manejo de errores
@@ -164,9 +165,13 @@ func (s *Servidor) Temporal(conexion net.Conn){
 		return
 	}
 
+	//Tranforma el mensaje en un json para poderlo imprimir en el servidor
+	json, _ := json.Marshal(identificacion)
+	fmt.Println("Servidor <<", c.getUsuario(), "---", string(json))
+
+	//Crea y encia el mensaje correspondiente
 	mc := FabricaMensaje(RESPONSE).operation(IDENTIFY).result(SUCCESS).extra(nombre)
 	mt := FabricaMensaje(NEW_USER).username(nombre)
-
 	s.EnviaTodos(c, mc, mt)
 
 	//Lamar al ciclo infinito del cliente
@@ -186,7 +191,12 @@ func (s *Servidor) EscuchaCliente(c *Cliente){
 			s.Desconecta(c)
 			return
 		}
+		
+		//Convierte el mensaje en un json para poderlo imprimir en el servidor
+		json, _ := json.Marshal(mensaje)
+		fmt.Println("Servidor <<", c.getUsuario(), "---", string(json))
 
+		//Acción del mensaje
 		s.ProcesaMensaje(mensaje, c)	
 	}
 	
@@ -232,7 +242,7 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		destino , existe := s.usuarios[m.Username]
 		if !existe{
 			//Si no existe envia el mensaje correspondiente
-			mc := FabricaMensaje(RESPONSE).operation(TEXT). result(NO_SUCH_USER).extra(m.Username)
+			mc := FabricaMensaje(RESPONSE).operation(TEXT).result(NO_SUCH_USER).extra(m.Username)
 			s.EnviaTodos(c, mc, nil)
 			return
 		}

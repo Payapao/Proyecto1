@@ -1,0 +1,84 @@
+using System;
+using System.Net.Sockets;
+using System.Text.Json;
+
+
+class Cliente{
+
+    static void Uso(){
+	Console.WriteLine("Uso de las banderas\n" +
+	                  "'-h' muestra este mensaje de ayuda\n" +
+			  "'-i' para indicar la dirección ip\n" +
+			  "'-p' para indicar el puerto (1024-65535)\n" +
+	                  "Ejemplo: ./build/cliente.exe -i localhost -p 1234");
+    }
+
+    static void Main(string[] args){
+
+	string ip = "";
+	int puerto = 0;
+
+	for(int i = 0; i<args.Length; i++)
+	    if (args[i].equals("-h")){
+		Uso();
+		return;
+	    }
+	//Verifica que la cantidad de banderas sea exactamente las necesarias
+	if (args.Length < 4 || args.Length > 4){
+	    Uso();
+	    return;
+	}
+
+	//Lee las banderas para guardar los valores
+	for(int i = 0; i<args.Length; i++){
+	    switch(args[i]){
+		case "-i":
+		    if(i+1 >= args.Length){
+			Console.Write("La bandera -i necesita tener una dirección ip");
+			Uso();
+			return;
+		    }
+		    ip = args[i+1];
+		    break;
+		case "-p":
+		    if(i+1 >= args.Length){
+			Console.Write("La bandera -p necesita tener un puerto");
+			Uso();
+			return;
+		    }
+		    //Intenta convertir el argumento a un entero
+		    bool numero = int.TryParse(args[i+1], out puerto);
+		    if (!numero){
+			Console.Write("La bandera -p necesita tener un puerto");
+			Uso();
+			return;
+		    }
+		    break;
+		default:
+		    Uso();
+		    return;
+	    }
+	}
+
+	//Checa que el puerto sea valido
+	if(puerto < 1024 || puerto > 65535){
+	    Console.Write("El puerto no es valido");
+	    Uso();
+	    return;
+	}
+
+	//Checa que la dirección ip sea valida
+	try{
+	    TcpClient cliente = new TcpClient(ip, puerto);
+	    NetworkStream conexion = new cliente.GetStream();
+	    Console.Write("Conexión con el servidor establecida correctamente");
+		
+	}catch(SocketException e){
+	    Console.Write("No fue posible conectarse al servidor");
+	    return;
+	}
+
+    
+	
+    }
+}

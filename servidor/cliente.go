@@ -1,6 +1,7 @@
 package main
 
 import(
+	"fmt"
 	//Sincronización de goroutines
 	"sync"
 	//manejo de errores
@@ -60,5 +61,6 @@ func (c *Cliente) EnviaMensaje(mensaje *Mensaje) {
 	if err != nil {
 		c.conexion.Close()
 	}
-	
+	json, _ := json.Marshal(mensaje)
+	fmt.Println("Servidor >>", c.getUsuario(), "---", string(json))
 }
