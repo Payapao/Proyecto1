@@ -105,10 +105,11 @@ func (s *Servidor) EliminaCliente(cliente *Cliente){
 	defer s.candado.Unlock()
 
 	//Elimina al usuario del servidor
+	delete(s.usuarios, cliente.getUsuario())
 
 	//Envia mensje de usuario desconectado a todos los clientes
 	for _, c := range s.usuarios {
-		c.EnviaMensaje(FabricaMensaje(DISCONNECT).username(cliente.getUsuario()))
+		c.EnviaMensaje(FabricaMensaje(DISCONNECTED).username(cliente.getUsuario()))
 	}
 
 	//Verifica si el usuario estaba en alguna sala
@@ -155,7 +156,6 @@ func (s *Servidor) Temporal(conexion net.Conn){
 
 	//Manda llamar el metodo NuevoCliente para agregarlo a la lista de usuarios del servidor
 	c, e := s.NuevoCliente(nombre, conexion, codificador, decodificador)
-
 	if e != nil {
 		//Manda mensaje de usuario repetido
 		codificador.Encode(Mensaje{Type: RESPONSE, Operation: IDENTIFY, Result: USER_ALREADY_EXISTS, Extra: nombre })
@@ -183,7 +183,7 @@ func (s *Servidor) EscuchaCliente(c *Cliente){
 			//Manda mensaje de Json invalido
 			c.codificador.Encode(Mensaje{Type: RESPONSE, Operation: INVALID_TIPO, Result: INVALID_RESPUESTA})
 			//Desconecta al cliente
-			c.conexion.Close()
+			s.Desconecta(c)
 			return
 		}
 
@@ -195,6 +195,10 @@ func (s *Servidor) EscuchaCliente(c *Cliente){
 //Define que hace el mensaje que envio el cliente
 func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 	switch m.Type {
+	case IDENTIFY:
+		//Deberia desconectar o solo ignorar?
+		//s.Desconecta(c)
+		
 	case STATUS:
 		//Revisa si el estado es distinto al que tiene el cliente
 		if m.Status == c.getEstado(){
@@ -234,12 +238,12 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		}
 
 		//Fabrica y envia el mensaje al destinatario
-		md := FabricaMensaje(TEXT_FROM).username(c.getUsuario()).extra(m.Extra)
+		md := FabricaMensaje(TEXT_FROM).username(c.getUsuario()).text(m.Text)
 		s.EnviaTodos(destino, md, nil)
 
 	case PUBLIC_TEXT:
 		//Fabrica y envia el mensaje a todos
-		mt := FabricaMensaje(PUBLIC_TEXT_FROM).username(c.getUsuario()).extra(m.Extra)
+		mt := FabricaMensaje(PUBLIC_TEXT_FROM).username(c.getUsuario()).text(m.Text)
 		s.EnviaTodos(c, nil, mt)
 
 	case NEW_ROOM:
@@ -322,7 +326,7 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		}
 
 		//Fabrica y envia el mensaje a todos en la sala
-		mt := FabricaMensaje(ROOM_TEXT_FROM).roomname(m.Roomname).username(c.getUsuario()).extra(m.Extra)
+		mt := FabricaMensaje(ROOM_TEXT_FROM).roomname(m.Roomname).username(c.getUsuario()).text(m.Text)
 		sala.EnviaSala(c, nil, mt)
 
 	case LEAVE_ROOM:
@@ -343,31 +347,33 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		//Por practicidad el mensaje lo envia el metodo EliminaCliente
 
 	case DISCONNECT:
-		//Manda el mensaje correspondiente a todos los usuarios
-		mt := FabricaMensaje(DISCONNECTED).username(c.getUsuario())
-		s.EnviaTodos(c, nil, mt)
-
-		//Elimina al cliente de las salas
-		s.candado.RLock()
-		for _, sala := range s.salas {
-			if len(sala.getClientes()) == 1 {
-				s.EliminaSala(sala)
-			} 
-			sala.EliminaCliente(c)
-		}
-		s.candado.RUnlock()
-		
-		//Elimina al cliente del servidor
-		s.EliminaCliente(c)
-		
-		//Desconecta al usuario
-		c.conexion.Close()
+		//Manda a llamar el metodo desconecta
+		s.Desconecta(c)
 		
 	default:
 		//Nunca deberia pasar este default
 		return
 	}
 	return
+}
+
+func (s *Servidor) Desconecta(c *Cliente){
+	
+	//Elimina al cliente de las salas
+	s.candado.RLock()
+	for _, sala := range s.salas {
+		if len(sala.getClientes()) == 1 {
+			s.EliminaSala(sala)
+		} 
+		sala.EliminaCliente(c)
+	}
+	s.candado.RUnlock()
+	
+	//Elimina al cliente del servidor
+	s.EliminaCliente(c)
+	
+	//Desconecta al usuario
+	c.conexion.Close()
 }
 
 //Verifica que el usuario pueda hacer lo que quiere hacer en las salas
