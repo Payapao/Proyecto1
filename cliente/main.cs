@@ -67,18 +67,53 @@ class Cliente{
 	    return;
 	}
 
+	//Pide el nombre de usuario antes de conectarse
+	Console.WriteLine("Para continuar es necesario agregar un username");
+	Console.Write("Username: ");
+
+	string username = Console.ReadLine();
+	username = username.Trim()
+
+	    if (username.Equals("")){
+	    Console.WriteLine("El nombre de usuario no es válido");
+	    return;
+	}
+
+	if(username.Length > 8){
+	    Console.WriteLine("El nombre de usuario debe tener una longitud menor a 8");
+	    return;
+	}
+	
 	//Checa que la dirección ip sea valida
 	try{
 	    TcpClient cliente = new TcpClient(ip, puerto);
 	    NetworkStream conexion = new cliente.GetStream();
-	    Console.Write("Conexión con el servidor establecida correctamente");
-		
 	}catch(SocketException e){
 	    Console.Write("No fue posible conectarse al servidor");
 	    return;
 	}
 
-    
+	//Crea al clinete
+	Cliente c = new Cliente{username, ACTIVE}
+
+	FabricaMensaje(IDENTIFY).username(username);
+	FabricaMensaje(USERS)
+
+	//Es necesario que escucha y escribe esten en hilos separados
+
+	//Manda llamar a un metodo temporal que:
+	Servidor s = c.Temporal();
+
+	s.EscuchaServidor();
+
+   
+	/*Manda IDENTIFY al servidor
+	Cuando el servidor responda SUCCESS se manda el mensaje de que se pudo unir al servidor
+	Si recibe un USER_ALREADY_EXIST se le avisa al usuario y termina el programa
+	Se manda el mensaje USERS para que nos de los usuarios al momento
+	Se crea un servidor y se manda llamar al metodo EscuchaServidor */	    
 	
     }
+
+    //Probablemente aqui tenga que ir el metodo temporal, si no en el servvidor
 }

@@ -1,16 +1,15 @@
 using System;
 
 public enum Respuesta {
-    NEW_USER, //Se unio un nuevo usuario
-    NEW_STATUS, //Se cambia el estado de un usuario
-    USER_LIST, //Regresa la lista de usuarios del chat
-    TEXT_FROM, //Recibe un mensaje privado
-    PUBLIC_TEXT_FROM, //Algún usuario mando un mensaje publico
-    INVITATION, //Invitación a una sala
-    JOINED_ROOM, //Alguien se unio a una sala
-    ROOM_USERS_LIST, //Regresa la lista de usuarios de una sala
-    ROOM_TEXT_FROM, //Se envió un mensaje a una sala
-    LEFT_ROOM, //Un usuario abandonó una sala
-    DISCONNECTED, //Avisa que un usuario se desconecto
-    RESPONSE, //Respuesta del servidor
+
+    SUCCESS,//La operación se ejecuto exitosamente
+    USER_ALREADY_EXISTS, //El nombre se usuario ya exite
+    NO_SUCH_USER, //El usuario no existe
+    ROOM_ALREADY_EXISTS, //El nombre de la sala ya existe
+    NO_SUCH_ROOM, //La sala no exite
+    NOT_INVITED, //El usuario no ha sido invitado a la sala
+    NOT_JOINED, //El usuario no se ha unido a la sala
+    NOT_IDENTIFIED, //Usuario no identificado
+    INVALID_RESPUESTA //Jason invalido
+    
 }
