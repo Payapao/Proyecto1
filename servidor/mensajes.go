@@ -9,7 +9,7 @@ type Mensaje struct{
 	Type Tipo `json:"type,omitempty"`
 	Roomname string `json:"roomname,omitempty"`
 	Username string `json:"username,omitempty"`
-	Usernames map[string]*Cliente `json:"usernames,omitempty"`
+	Usernames []string `json:"usernames,omitempty"`
 	Status Estados `json:"status,omitempty"`
 	Operation Tipo `json:"operation,omitempty"`
 	Result Respuesta `json:"result,omitempty"`
@@ -36,7 +36,7 @@ func (m *Mensaje) username(s string) *Mensaje{
 	return m
 }
 
-func (m *Mensaje) usernames(clientes map[string]*Cliente) *Mensaje {
+func (m *Mensaje) usernames(clientes []string) *Mensaje {
 	/*	var s string.Builder
 	s.WriteString("[")
 	for user , _ := range clientes {

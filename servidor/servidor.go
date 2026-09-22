@@ -289,8 +289,9 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 
 		//Agrega al cliente en la lista de invitados y envia el mensaje
 		for _, cliente := range m.Usernames {
-			sala.Invita(cliente)
-			cliente.EnviaMensaje(FabricaMensaje(INVITATION).username(c.getUsuario()).roomname(m.Roomname))
+			c, _ := s.usuarios[cliente]
+			sala.Invita(c)
+			c.EnviaMensaje(FabricaMensaje(INVITATION).username(c.getUsuario()).roomname(m.Roomname))
 		}
 
 	case JOIN_ROOM:
@@ -411,7 +412,7 @@ func (s *Servidor) Verifica(c *Cliente, m Mensaje, tipo Tipo) *Sala {
 			return nil
 		}
 	case INVITE:
-		for invitado, _ := range m.Usernames {
+		for _, invitado := range m.Usernames {
 			_, e := s.usuarios[invitado]
 			if ! e {
 				mc := FabricaMensaje(RESPONSE).operation(INVITE).result(NO_SUCH_USER).extra(invitado)
