@@ -17,11 +17,13 @@ public class Servidor{
     //Escucha los mensajes del servidor
     public EscuchaServidor(){
 	//Mientras siga conectado con el servidor
-	while {
-	    Mensaje mensaje = c.Recibe() //Aqui tiene que decodificar el mensaje
+	while (true) {
+	    //Decodifica el mensaje
+	    Mensaje mensaje = c.Recibe();
 
 	    //Si el mensaje no es valido
-	    Desconecta.(c);
+	    if(mensaje == null)
+		return;
 
 	    switch (m.Type){
 		case RESPONSE:

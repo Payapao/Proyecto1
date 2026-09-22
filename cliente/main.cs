@@ -79,8 +79,8 @@ class Cliente{
 	    return;
 	}
 
-	if(username.Length > 8){
-	    Console.WriteLine("El nombre de usuario debe tener una longitud menor a 8");
+	if(username.Length >= 8){
+	    Console.WriteLine("El nombre de usuario debe tener una longitud menor a 9");
 	    return;
 	}
 	
@@ -94,24 +94,22 @@ class Cliente{
 	}
 
 	//Crea al clinete
-	Cliente c = new Cliente{username, ACTIVE}
-
-	FabricaMensaje(IDENTIFY).username(username);
-	FabricaMensaje(USERS)
+	Cliente c = new Cliente{username, ip, puerto}
 
 	//Es necesario que escucha y escribe esten en hilos separados
 
 	//Manda llamar a un metodo temporal que:
+	    /*Manda IDENTIFY al servidor
+	      Cuando el servidor responda SUCCESS se manda el mensaje de que se pudo unir al servidor
+	      Si recibe un USER_ALREADY_EXIST se le avisa al usuario y termina el programa
+	      Se manda el mensaje USERS para que nos de los usuarios al momento
+	      Se crea un servidor y se manda llamar al metodo EscuchaServidor */
 	Servidor s = c.Temporal();
 
 	s.EscuchaServidor();
 
    
-	/*Manda IDENTIFY al servidor
-	Cuando el servidor responda SUCCESS se manda el mensaje de que se pudo unir al servidor
-	Si recibe un USER_ALREADY_EXIST se le avisa al usuario y termina el programa
-	Se manda el mensaje USERS para que nos de los usuarios al momento
-	Se crea un servidor y se manda llamar al metodo EscuchaServidor */	    
+		    
 	
     }
 
