@@ -206,7 +206,7 @@ public class Servidor{
 		Console.Write("No formas parte de la sala" + m.Extra);
 		break;
 	    default:
-		Console.Write("Algo salio mal");
+		Console.WriteLine("Algo salio mal");
 		Desconecta();
 	}
     }
@@ -215,18 +215,44 @@ public class Servidor{
 	switch(m.Operation){
 	    case NEW_ROOM:    
 		salas.Add(m.Extra, new List<string> {c.username});
-		Console.Write("La sala" + m.Extra + " ha sido creada correctamente");
+		Console.WriteLine("La sala" + m.Extra + " ha sido creada correctamente");
 		break;
 	    case JOIN_ROOM:
 		UnirseSala(m.Extra);
 		invitaciones.Remove(m.Extra);
 		break;
 	    default:
-		Console.Write("Ocurrio un error inesperado");
+		Console.WriteLine("Ocurrio un error inesperado");
 		Desconecta();
 		}
     }
 
+    //Metodo que explica como usar el chat
+    public UsoServidor(){
+	Console.WriteLine("Uso del chat:\n" +
+			  "Para actalizar un estado escriba AWAY, BUSY o ACTIVE:\n " +
+			  "                        Actaliza estado - estado\n" +
+			  "Para obtener la lista de usuarios del servidor escriba:\n" +
+			  "                        Usuarios - General\n" +
+			  "Para mandar un mensaje a todos escriba:\n" +
+			  "                        Todos - mensaje\n" +
+			  "Para mandar un mensaje a un usuario escriba\n" +
+			  "                        nombre_del_usuario - mensaje\n" +
+			  "Para mandar mensaje en una sala escriba\n" +
+			  "                        nombre_de_la_sala - mensaje\n"
+			  "Para crear una sala escriba:\n" +
+			  "                        Crea - nombre_de_la_sala\n" +
+			  "Para invitar a usuarios a la sala escriba:\n" +
+			  "                        Invita - usuario1, usuario2, usuario3\n" +
+			  "Para unirse a una sala a la que fue invitado escriba\n" +
+			  "                        Unirse - nombre_de_la_sala\n" +
+			  "Para obtener la lista de usuarios de una sala en especifico escrba\n" +
+			  "                        Usuarios - nombre_de_la_sala\n" +
+			  "Para abandonar una sala escriba:\n"+
+			  "                        Abandona - nombre_de_la_sala\n" +
+			  "Para desconectarse del servidor escriba:\n"
+			  "                        Desconecta");
+    }
 
     //Metodo para enviar el mensaje de desconección  a los usuarios
     public Desconecta(){

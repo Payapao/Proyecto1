@@ -5,7 +5,7 @@ using System.Text.Json;
 
 class Cliente{
 
-    static void Uso(){
+    static void UsoBanderas(){
 	Console.WriteLine("Uso de las banderas\n" +
 	                  "'-h' muestra este mensaje de ayuda\n" +
 			  "'-i' para indicar la dirección ip\n" +
@@ -20,12 +20,12 @@ class Cliente{
 
 	for(int i = 0; i<args.Length; i++)
 	    if (args[i].equals("-h")){
-		Uso();
+		UsoBanderas();
 		return;
 	    }
 	//Verifica que la cantidad de banderas sea exactamente las necesarias
 	if (args.Length < 4 || args.Length > 4){
-	    Uso();
+	    UsoBanderas();
 	    return;
 	}
 
@@ -35,7 +35,7 @@ class Cliente{
 		case "-i":
 		    if(i+1 >= args.Length){
 			Console.Write("La bandera -i necesita tener una dirección ip");
-			Uso();
+			UsoBanderas();
 			return;
 		    }
 		    ip = args[i+1];
@@ -43,19 +43,19 @@ class Cliente{
 		case "-p":
 		    if(i+1 >= args.Length){
 			Console.Write("La bandera -p necesita tener un puerto");
-			Uso();
+			UsoBanderas();
 			return;
 		    }
 		    //Intenta convertir el argumento a un entero
 		    bool numero = int.TryParse(args[i+1], out puerto);
 		    if (!numero){
 			Console.Write("La bandera -p necesita tener un puerto");
-			Uso();
+			UsoBanderas();
 			return;
 		    }
 		    break;
 		default:
-		    Uso();
+		    UsoBanderas();
 		    return;
 	    }
 	}
@@ -63,7 +63,7 @@ class Cliente{
 	//Checa que el puerto sea valido
 	if(puerto < 1024 || puerto > 65535){
 	    Console.Write("El puerto no es valido");
-	    Uso();
+	    UsoBanderas();
 	    return;
 	}
 
@@ -105,6 +105,7 @@ class Cliente{
 	      Se manda el mensaje USERS para que nos de los usuarios al momento
 	      Se crea un servidor y se manda llamar al metodo EscuchaServidor */
 	Servidor s = c.Temporal();
+	s.UsoServidor();
 
 	s.EscuchaServidor();
 
