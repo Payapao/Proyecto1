@@ -169,7 +169,7 @@ func (s *Servidor) Temporal(conexion net.Conn){
 	json, _ := json.Marshal(identificacion)
 	fmt.Println("Servidor <<", c.getUsuario(), "---", string(json))
 
-	//Crea y encia el mensaje correspondiente
+	//Crea y envia el mensaje correspondiente
 	mc := FabricaMensaje(RESPONSE).operation(IDENTIFY).result(SUCCESS).extra(nombre)
 	mt := FabricaMensaje(NEW_USER).username(nombre)
 	s.EnviaTodos(c, mc, mt)
@@ -280,10 +280,12 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		//Verifica
 		sala := s.Verifica(c, m, INVITE)
 		if sala == nil {
+			fmt.Println("Sala nula")
 			return
 		}
 		//Si el cliente no pertenece a la sala ignora el json
 		if !sala.Existe(c){
+			fmt.Println("El cliente no pertenece")
 			return
 		}
 
@@ -292,6 +294,7 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 			c, _ := s.usuarios[cliente]
 			sala.Invita(c)
 			c.EnviaMensaje(FabricaMensaje(INVITATION).username(c.getUsuario()).roomname(m.Roomname))
+			fmt.Println("No se que esta mal")
 		}
 
 	case JOIN_ROOM:

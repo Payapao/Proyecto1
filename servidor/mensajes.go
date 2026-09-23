@@ -37,14 +37,6 @@ func (m *Mensaje) username(s string) *Mensaje{
 }
 
 func (m *Mensaje) usernames(clientes []string) *Mensaje {
-	/*	var s string.Builder
-	s.WriteString("[")
-	for user , _ := range clientes {
-		s.WriteString(`"`)
-		s.WriteString(user)
-		s.WriteString(`", `)
-	}
-	s.WriteString("]") */
 	m.Usernames = clientes
 	return m
 }
