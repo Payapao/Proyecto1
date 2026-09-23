@@ -1,6 +1,6 @@
 using System;
 
-public enum Respuesta {
+public enum Tipo {
 
     SUCCESS,//La operación se ejecuto exitosamente
     USER_ALREADY_EXISTS, //El nombre se usuario ya exite

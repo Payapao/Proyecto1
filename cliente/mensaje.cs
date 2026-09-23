@@ -16,13 +16,16 @@ public class Mensaje {
     
     [JsonIgnoreCondition(JsonIgnoreConditionWhenWritingNull)]
     public string[] Usernames {get; set;}
-    
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     [JsonIgnoreCondition(JsonIgnoreConditionWhenWritingNull)]
     public Estados Status {get; set;}
-    
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     [JsonIgnoreCondition(JsonIgnoreConditionWhenWritingNull)]
     public Tipo Operation {get; set;}
 
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     [JsonIgnoreCondition(JsonIgnoreConditionWhenWritingNull)]
     public Respuesta Result {get; set;}
 
