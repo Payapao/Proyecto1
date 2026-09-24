@@ -14,10 +14,10 @@ public class Cliente{
 	this.username = u;
 	this.estado = ACTIVE;
 	this.conexion = new TcpClient(ip, puerto);
-	NetworkStream flujo = new conexion.GetStream;
+	NetworkStream flujo = new conexion.GetStream();
 
 	decodificador = new StreamReader(flujo, Encoding.UTF8);
-	codificador = new StreamWriter(flujo, Encoding.Utf8)
+	codificador = new StreamWriter(flujo, Encoding.Utf8);
     }
 
     //Metodo envia para codificar los mensajes al servidor
