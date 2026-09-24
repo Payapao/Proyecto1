@@ -27,16 +27,33 @@ func (s *Servidor) getNombre() string {
 	return s.nombre
 }
 
+//Tiene que regresar una copia para evitar los bloqueos
 func (s *Servidor) getSalas() map[string]*Sala {
 	s.candado.RLock()
 	defer s.candado.RUnlock()
-	return s.salas
+
+	//Creamos la copia
+	copia := make(map[string]*Sala)
+	for nombre, sala := range s.salas{
+		copia[nombre] = sala
+	}
+	
+	//Regresamos la copia
+	return copia
 }
 
+//Tiene que regresar una copia para evitar los bloqueos
 func (s *Servidor) getUsuarios() map[string]*Cliente {
 	s.candado.RLock()
 	defer s.candado.RUnlock()
-	return s.usuarios
+	//Creamos la copia
+	copia := make(map[string]*Cliente)
+	for nombre, usuario := range s.usuarios{
+		copia[nombre] = usuario
+	}
+	
+	//Regresamos la copia
+	return copia
 }
 
 
@@ -62,6 +79,7 @@ func (s *Servidor) NuevaSala(nombre string) (*Sala, error){
 	nuevaSala := &Sala{
 		nombre: nombre,
 		clientes: make(map[string]*Cliente),
+		invitados: make(map[string]*Cliente),
 	}
 
 	s.salas[nombre] = nuevaSala
@@ -102,19 +120,17 @@ func (s *Servidor) NuevoCliente(nombre string, conexion net.Conn, c *json.Encode
 
 //Metodo para eliminar un cliente
 func (s *Servidor) EliminaCliente(cliente *Cliente){
-	s.candado.Lock()
-	defer s.candado.Unlock()
 
 	//Elimina al usuario del servidor
 	delete(s.usuarios, cliente.getUsuario())
 
 	//Envia mensje de usuario desconectado a todos los clientes
-	for _, c := range s.usuarios {
-		c.EnviaMensaje(FabricaMensaje(DISCONNECTED).username(cliente.getUsuario()))
-	}
-
+	mt := FabricaMensaje(DISCONNECTED).username(cliente.getUsuario())
+	s.EnviaTodos(cliente, nil, mt)
+	
+	
 	//Verifica si el usuario estaba en alguna sala
-	for _, sala := range s.salas{
+	for _, sala := range s.getSalas(){
 		if sala.Existe(cliente) {
 			//Si era el unico en la sala elimina la sala
 			if len(sala.clientes) == 1 {
@@ -181,14 +197,14 @@ func (s *Servidor) Temporal(conexion net.Conn){
 
 //Ciclo para que se escuchen todos los mensajes de un cliente
 func (s *Servidor) EscuchaCliente(c *Cliente){
+	//Desconecta al cliente
+	defer s.Desconecta(c)
 	for{
 		var mensaje Mensaje
 		err := c.decodificador.Decode(&mensaje)
 		if err != nil {
 			//Manda mensaje de Json invalido
 			c.codificador.Encode(Mensaje{Type: RESPONSE, Operation: INVALID_TIPO, Result: INVALID_RESPUESTA})
-			//Desconecta al cliente
-			s.Desconecta(c)
 			return
 		}
 		
@@ -226,12 +242,10 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 	case USERS:
 		//Crea el map de los usuarios
 		users := make(map[string]string)
-		s.candado.RLock()
-		for n, cliente := range s.usuarios {
+		for n, cliente := range s.getUsuarios() {
 			estado, _ := cliente.getEstado().toStringEstados()
 			users[n] = estado
 		}
-		s.candado.RUnlock()
 
 		//Fabrica el mensaje y lo envia
 		mc := FabricaMensaje(USER_LIST).users(users)
@@ -280,21 +294,18 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		//Verifica
 		sala := s.Verifica(c, m, INVITE)
 		if sala == nil {
-			fmt.Println("Sala nula")
 			return
 		}
 		//Si el cliente no pertenece a la sala ignora el json
 		if !sala.Existe(c){
-			fmt.Println("El cliente no pertenece")
 			return
 		}
 
 		//Agrega al cliente en la lista de invitados y envia el mensaje
 		for _, cliente := range m.Usernames {
-			c, _ := s.usuarios[cliente]
-			sala.Invita(c)
-			c.EnviaMensaje(FabricaMensaje(INVITATION).username(c.getUsuario()).roomname(m.Roomname))
-			fmt.Println("No se que esta mal")
+			ct, _ := s.usuarios[cliente]
+			sala.Invita(ct)
+			ct.EnviaMensaje(FabricaMensaje(INVITATION).username(ct.getUsuario()).roomname(m.Roomname))
 		}
 
 	case JOIN_ROOM:
@@ -374,14 +385,12 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 func (s *Servidor) Desconecta(c *Cliente){
 	
 	//Elimina al cliente de las salas
-	s.candado.RLock()
-	for _, sala := range s.salas {
+	for _, sala := range s.getSalas() {
 		if len(sala.getClientes()) == 1 {
 			s.EliminaSala(sala)
 		} 
 		sala.EliminaCliente(c)
 	}
-	s.candado.RUnlock()
 	
 	//Elimina al cliente del servidor
 	s.EliminaCliente(c)
@@ -432,26 +441,22 @@ func (s *Servidor) EnviaTodos(c *Cliente, mc *Mensaje, mt *Mensaje){
 
 	//Si no hay mensaje al propio usuario
 	if mc == nil{
-		s.candado.RLock()
-		for usuario, cliente := range s.usuarios {
+		for usuario, cliente := range s.getUsuarios() {
 			if usuario != c.getUsuario() {
 				cliente.EnviaMensaje(mt)
 			}
 		}
-		s.candado.RUnlock()
 	}else if mt == nil {
 		//Si no hay mensaje para el resto de usuarios
 		c.EnviaMensaje(mc)
 	}else {
 		//Hay mensaje para ambos
-		s.candado.RLock()
-		for usuario, cliente := range s.usuarios {
+		for usuario, cliente := range s.getUsuarios() {
 			if usuario == c.getUsuario() {
 				cliente.EnviaMensaje(mc)
 			}else{
 				cliente.EnviaMensaje(mt)
 			}
 		}
-		s.candado.RUnlock()
 	}
 }

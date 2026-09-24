@@ -8,8 +8,6 @@ import (
 
 	//Para manejo de errores
 	"log"
-	//Para la entrada estandar
-	//"bufio"
 	//Para leer argumentos iniciales
 	"os"
 	//Conversión de valores
@@ -40,7 +38,7 @@ func main(){
 	//intenta convertir el parametro recibido en un entero
 	puerto, err := strconv.Atoi(os.Args[1])
 	if err != nil {
-		log.Fatal("El parametro recivido no es un puerto")
+		log.Fatal("El parametro recibido no es un puerto")
 		uso()
 	}
 
@@ -60,7 +58,7 @@ func main(){
 	//Asegura de que se libere el puerto cuando se termine el programa
 	defer escucha.Close()
 
-
+	
 	//Crea el servidor
 	servidor := NuevoServidor("Payapao's server")
 
