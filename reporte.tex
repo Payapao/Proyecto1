@@ -1,0 +1,114 @@
+\documentclass{article}
+
+\usepackage[english]{babel}
+
+
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[svgnames]{xcolor}
+\usepackage{hyperref}
+\usepackage{float}
+\definecolor{antiquefuchsia}{rgb}{0.57, 0.36, 0.51}
+
+
+\begin{document}
+\begin{titlepage}
+\begin{center}
+
+\textsc{\huge\uppercase{Universidad Nacional Autónoma De México}}\\[0.5cm]	
+
+{\huge \uppercase{Facultad de Ciencias, 2027-I} \\[0.5cm] }
+{\huge \uppercase{Modelado y Programación} \\[0.5cm] }
+
+%%% Título
+\rule{\linewidth}{0.4pt}\\[0.7em]
+{ \color{antiquefuchsia} \textsc{\Large Proyecto 1:}} \\[0.7em] 
+ \textit{\Large Chat: Servidor - Cliente}
+ \\[0.1em] 
+ \rule{\linewidth}{0.4pt}\\[0.7em]
+
+{\color{antiquefuchsia} 
+\textsc{\Large Morales Galván María Paola}}\\[0.7em]
+  \textit{\Large 323073406\\[0.5em] }
+  \textit{\Large 25/09/2026}    
+ \\[0.1em] 
+\rule{\linewidth}{0.4pt}\\[2em]
+
+
+\color{black!80!black}{\large \uppercase{\textsc{ Profesor:}}}\\[0.25cm]
+
+\begin{tabular}{l}
+\large 	Canek Peláez Valdés \\[0.4cm]
+\end{tabular}
+
+\large \uppercase{Ayudante de Teoría:}\\[0.2cm]
+\centering
+\begin{tabular}{l}
+
+\large Cynthia Lizbeth Sánchez Urbano \\[0.4cm]
+\end{tabular}
+
+\large \uppercase{Ayudante de Laboratorio:}\\[0.2cm]
+\centering
+\begin{tabular}{l}
+
+\large Miriam Torres Bucio\\[0.4cm]
+\end{tabular}
+
+\vfill
+
+\end{center}
+\end{titlepage}
+
+\maketitle
+
+\section{Resumen}
+
+En este proyecto realice un sistema  de chat para comunicación en tiempo real,  para el cual fue necesario la creación de un servidor (programado en Golang) y un cliente (programado en C\#) los cuales se comunican mediante el formato JSON. Es importante destacar que la implementación actual tiene como objetivo un proyecto escolar por lo que  no cuenta con ningun protocolo de seguridad ni mecanismos de autenticación,. Asimismo, los datos y nombres proporcinados a lo largo de este reporte son ejemplos meramente ilustrativos.
+
+
+\section{Introducción}
+
+En el proyecto se realizo un sistema de comunicación en tiempo real, se utilizaron 2 lenguajes de programación distintos: Go (Golang) para implementar el servidor y C\# para el desarrollo del cliente, agregando sistema de construcción Meson para administrar la compilación del cliente.
+
+\subsection{Servidor - Golang}
+
+Go es un lenguaje de programación compilado, de codigo abierto desarollado por Google en 2007 y lanzado en 2009 por Robert Griesemer, Rob Pike y Ken Thompson.
+
+La razón principal para elegir este lenguaje para el servidor se debio a que su modelo de concurrencia mediane gorutines permite gestionar varias conexiones TCP de manera simultanea y su paquete net que facilita la creación de listeners y sockets
+
+\subsection{Cliente - C\#}
+
+C\# es un lenguaje de programcación compilado, fuertemente tipado y orientado a objetos creado por Microsoft como parte de la platamorma NET
+
+Esté lenguaje se eligio ya que sus librerias de red nativas permiten crear y gestionar conexiones por sockets de manera directa e intuitiva, ademas cuenta con herramientas integradas de serialización y deserialización de estructuras JSON a objetos de C\#
+
+\subsection{Sistema de construcción del Cliente (Meson)}
+
+
+Meson es un sistema de construcción (build system) de código abierto diseñado para ser extremadamente rápido, amigable e independiente de la plataforma.
+
+Se integro Meson al cliente por su facilidad la administración de dependencias y permite definir reglas claras en su archivo de configuración (meson.build) para general el ejecutable del proyecto sin necesidad de ejecutar comandos complejos para compilarlo\\ \\
+Ambos componentes se comunican a través del protocolo TCP utilizando la serialización en formato  JSON como estandar en el intercambio de datos. Y no cuenta con verificación de identidad ni protocolos de seguridad.
+
+\newpage
+
+\section{Analisis y Diseño (Modelo)}
+
+En esta seción desglosaremos como se hizo el analisis y diseño del proyecto
+
+\subection{Analisis}
+
+El proyecto nos pide hacer un chat, un servidor que pueda recibir multiples clientes y un cliente que sea capaz de unirse al servidor. Sabiendo esto podemos dividir nuestro proyecto en 2 partes fundamentales, el servidor y el cliente.
+
+Por un lado el servidor tiene que ser capaz de realizar distintas funciones:
+
+\begin{itemize}
+\item Recibir 
+\item and like this.
+\end{itemize}
+
+
+\end{document}
