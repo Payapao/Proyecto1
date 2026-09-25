@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Net.Sockets;
 using System.Collections.Generic;
 
@@ -99,17 +100,19 @@ class Proyecto1 {
 	
 	
 	//Es necesario que escucha y escribe esten en hilos separados
-	
-	//Manda llamar a un metodo temporal que:
-	/*Manda IDENTIFY al servidor
-	  Cuando el servidor responda SUCCESS se manda el mensaje de que se pudo unir al servidor
-	  Si recibe un USER_ALREADY_EXIST se le avisa al usuario y termina el programa
-	  Se manda el mensaje USERS para que nos de los usuarios al momento
-	  Se crea un servidor y se manda llamar al metodo EscuchaServidor */
 	Servidor s = c.Temporal();
 	if(s != null){
 	    s.UsoServidor();
-	    s.EscuchaServidor();
+	    Thread EscuchaServidor = new Thread(() => {s.EscuchaServidor();});
+	    EscuchaServidor.Start();
+
+	    //Para leer la terminal
+	    while(true){
+		string entrada = Console.ReadLine();
+		if(entrada == null)
+		    break;
+		s.Traductor(entrada);
+	    }
 	}
 	
     }

@@ -30,8 +30,8 @@ public class Cliente {
 	this.conexion = new TcpClient(ip, puerto);
 	NetworkStream flujo = conexion.GetStream();
 
-	decodificador = new StreamReader(flujo, Encoding.UTF8);
-	codificador = new StreamWriter(flujo, Encoding.UTF8) {AutoFlush = true};
+	decodificador = new StreamReader(flujo, new UTF8Encoding(false));
+	codificador = new StreamWriter(flujo, new UTF8Encoding(false)) {AutoFlush = true};
     }
 
     //Metodo envia para codificar los mensajes al servidor
@@ -39,12 +39,13 @@ public class Cliente {
 	try{
 	    var seria = new DataContractJsonSerializer(typeof(Mensaje));
 
+	    UTF8Encoding sinboom = new UTF8Encoding(false);
+
 	    //Se transforma a un json, se manda y fuerza la salida
 	    using (var ms = new MemoryStream()){
 		seria.WriteObject(ms, m);
-		string json = Encoding.UTF8.GetString(ms.ToArray());
-		Console.Write(json);
-		codificador.WriteLine( json);
+		string json = sinboom.GetString(ms.ToArray());
+		codificador.WriteLine(json);
 	    }
 
 	}catch( Exception e){

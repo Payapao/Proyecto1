@@ -63,7 +63,7 @@ public class Mensaje {
             if (Users == null)
 		return null;
             var d = new Dictionary<string, string>();
-            foreach (var usuario in d) 
+            foreach (var usuario in Users) 
 		//Para que los estados sean strings
                 d[usuario.Key] = usuario.Value.ToString(); 
             return d;
