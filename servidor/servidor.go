@@ -155,6 +155,7 @@ func (s *Servidor) Temporal(conexion net.Conn){
 	if err != nil{
 		//Manda mensaje de Json invalido
 		codificador.Encode(Mensaje{Type: RESPONSE, Operation: INVALID_TIPO, Result: INVALID_RESPUESTA})
+		fmt.Println("El JSON recibido fue invalido")
 		//Desconecta al cliente
 		conexion.Close()
 		return	
@@ -166,6 +167,7 @@ func (s *Servidor) Temporal(conexion net.Conn){
 	if identificacion.Type != IDENTIFY || nombre == "" || len(nombre) > 8 {
 		//Manda mensaje de usuario no identificado
 		codificador.Encode(Mensaje{Type: RESPONSE, Operation: INVALID_TIPO, Result: NOT_IDENTIFIED})
+		fmt.Println("El usuario no se ha identificado")
 		//Desconecta al cliente
 		conexion.Close()
 		return
@@ -176,6 +178,7 @@ func (s *Servidor) Temporal(conexion net.Conn){
 	if e != nil {
 		//Manda mensaje de usuario repetido
 		codificador.Encode(Mensaje{Type: RESPONSE, Operation: IDENTIFY, Result: USER_ALREADY_EXISTS, Extra: nombre })
+		fmt.Println("El usuario ya existia en el servidor")
 		//Desconecta al cliente
 		conexion.Close()
 		return
