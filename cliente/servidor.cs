@@ -1,44 +1,46 @@
 using System;
+using System.Collections.Generic;
 
-public class Servidor{
+public class Servidor {
 
     Cliente c;
-    Dictionary<string, Estados>() clientes;
-    Dictionary<string, List<string>>() salas;
-    string[] invitaciones;
+    Dictionary<string, Estados> clientes;
+    Dictionary<string, List<string>> salas;
+    List<string> invitaciones;
 
     //Metodo para crear un nuevo servidor
-    public NuevoServidor(Cliente c, Dictionary[string] clientes ){
+    public Servidor(Cliente c, Dictionary<string, Estados> clientes ) {
 	this.c = c;
 	this.clientes = clientes;
 	this.salas = new Dictionary<string, List<string>>();
-	this.invitaciones = new List<string>;
+	this.invitaciones = new List<string>();
     }
 
     //Metodo para unirse a una sala
-    public UnirseSala(string nombre){
-	cs = FabricaMensaje(ROOM_USERS);
+    public void UnirseSala(string nombre){
+	Mensaje cs = Mensaje.FabricaMensaje(Tipo.ROOM_USERS);
 	c.Envia(cs);
+	return;
     }
 
     //Metodo para interpretar los mensajes del cliente y convertirlos en un json
     
-    public Traductor(string s){
+    public void Traductor(string s){
 	
 	string[] separada = s.Split('-');
 	
 	switch (separada[0]){
 	    case "Actualiza estado":
-	    case "actualiza estado";
-	    case "ACTUALIZA ESTADO";
-	    if(separada[1].equals("ACTIVE") || separada[1].equals("active") || separada[1].equals("Active")){
-		Mensaje me = FabricaMensaje(STATUS).status(ACTIVE);
+	    case "actualiza estado":
+	    case "ACTUALIZA ESTADO":
+	    if(separada[1] == ("ACTIVE") || separada[1] == ("active") || separada[1] ==("Active")){
+		Mensaje me = Mensaje.FabricaMensaje(Tipo.STATUS).status(Estados.ACTIVE);
 		c.Envia(me);
-	    }else if(separada[1].equals("AWAY") || separada[1].equals("away") || separada[1].equals("Away")){
-		me = FabricaMensaje(STATUS).status(AWAY);
+	    }else if(separada[1] == ("AWAY") || separada[1] == ("away") || separada[1] == ("Away")){
+		Mensaje me = Mensaje.FabricaMensaje(Tipo.STATUS).status(Estados.AWAY);
 		c.Envia(me);
-	    }else if(separada[1].equals("BUSY") || separada[1].equals("busy") || separada[1].equals("Busy")){
-		me = FabricaMensaje(STATUS).status(BUSY);
+	    }else if(separada[1] == ("BUSY") || separada[1] == ("busy") || separada[1] == ("Busy")){
+		Mensaje me = Mensaje.FabricaMensaje(Tipo.STATUS).status(Estados.BUSY);
 		c.Envia(me);
 	    }else
 		Console.WriteLine("El estado no es válido");
@@ -47,14 +49,17 @@ public class Servidor{
 	    case "Usuarios":
 	    case "USUARIOS":
 		Console.WriteLine("Clientes " + "-" + " Estados");
-		if(string[2].equals("General"))
+		if(separada[1] == "General")
 		    foreach(var cliente in clientes)
+			
 			Console.WriteLine(cliente.Key + "-" + cliente.Value);
 		else{
 		    foreach(var sala in salas)
-			if(sala.Key.equals(string[1]))
-			    foreach(var cliente in sala.Value)
-				Console.WriteLine(cliente.Key + "-" + cliente.Value);
+			if(sala.Key == separada[1])
+			    foreach(var cliente in sala.Value){
+				Estados e = clientes[cliente];
+				Console.WriteLine(cliente + "-" + e );
+			    }
 		    
 		    Console.WriteLine("Es necesario pertenecer a la sala para acceder a la lista de usuarios");
 		}		
@@ -62,173 +67,182 @@ public class Servidor{
 	    case "Crea":
 	    case "CREA":
 	    case "crea":
-		Mensaje mc = FabricaMensaje(NEW_ROOM).romname(separada[1]);
+		Mensaje mc = Mensaje.FabricaMensaje(Tipo.NEW_ROOM).roomname(separada[1]);
+		c.Envia(mc);
+		break;
 	    case "Invita":
 	    case "INVITA":
 	    case "invita":
-		string[] invitados = separada[2].Split(',');
-		foreach(string invitado in initados)
+		string[] invitados = separada[1].Split(',');
+		foreach(string invitado in invitados)
 		    if (!clientes.ContainsKey(invitado)){
 			Console.WriteLine("El usuario"+ invitado+ "no existe");
 			break;
 		    }
-		Mensaje mi = FabricaMensaje(INVITE).roomname(separada[1]).usernames(invitados);
+		Mensaje mi = Mensaje.FabricaMensaje(Tipo.INVITE).roomname(separada[1]).usernames(invitados);
 		c.Envia(mi);
 		break;
 	    case "UNIRSE":
 	    case "Unirse":
 	    case "unirse":
 		foreach(string invitado in invitaciones)
-		    if(invitado.equals(separada[1])){
-			Mensaje mu = FabricaMensaje(JOIN_ROOM).roomname(separada[1]);
+		    if(invitado == separada[1]){
+			Mensaje mu = Mensaje.FabricaMensaje(Tipo.JOIN_ROOM).roomname(separada[1]);
 			c.Envia(mu);
 			break;
 		    }
 		Console.Write("Es necesario que estes invitado a la sala para unirtea la sala" + separada[1]);
+		break;
 	    case "ABANDONA":
 	    case "Abandona":
 	    case "abandona":
-		foreach(string sala in salas.Keks)
-		    if(sala.equals(separada[1])){
-			Mensaje ma = FabricaMensaje(LEAVE_ROOM).roomname(separada[1]);
+		foreach(string sala in salas.Keys)
+		    if(sala == separada[1]){
+			Mensaje ma = Mensaje.FabricaMensaje(Tipo.LEAVE_ROOM).roomname(separada[1]);
 			c.Envia(ma);
 			break;
 		    }
 		Console.Write("No eres miembro de la sala"+separada[1]);
 		break;
-	    case "DESCONECTA";
-	    case "Desconecta";
-	    case "desconecta";
+	    case "DESCONECTA":
+	    case "Desconecta":
+	    case "desconecta":
 	    Desconecta();
 	    break;
 	    default:
-		if (separada.Lenght == 2)
-		    if(string[0].equals("TODOS") || string[0].equals("Todos") || string[0].equals("todos")){
-			mt = FabricaMensaje(PUBLIC_TEXT).text(separada[1]);
+		if (separada.Length == 2)
+		    if(separada[0] == "TODOS" || separada[0] == "Todos" || separada[0] == "todos"){
+			Mensaje mt = Mensaje.FabricaMensaje(Tipo.PUBLIC_TEXT).text(separada[1]);
 			c.Envia(mt);
 		    }else {
-			foreach (string usuario in clientes.Keys){
-			    if (usuario.equals(string[0])){
-				mu = FabricaMensaje(TEXT).username(usuario).text(separada[1]);
+			foreach (string usuario in clientes.Keys)
+			    if (usuario == separada[0]){
+				Mensaje mu = Mensaje.FabricaMensaje(Tipo.TEXT).username(usuario).text(separada[1]);
 				c.Envia(mu);
 				break;
 			    }
-			}
+			
 			foreach (string sala in salas.Keys)
-			    if(sala.equals(string[0])){
-				ms = FabricaMensaje(ROOM_TEXT).roomname(separa[1]);
+			    if(sala == separada[0]){
+				Mensaje ms = Mensaje.FabricaMensaje(Tipo.ROOM_TEXT).roomname(separada[1]);
 				c.Envia(ms);
-				break
+				break;
 			    }
-			Console.Write("El usuario o la sala "+ separada[1]+ no existe);
+			//No se encontro el usuario o sala
+			Console.Write("El usuario o la sala "+ separada[1]+ "no existe");
 		    }
-		else
-		    Console.Write("El usuario o la sala "+ separada[1]+ "no existe");
+		else{
+		    Console.Write("El formato no coincide con el uso del chat");
+		    UsoServidor();
+		}
+		break;	    
 	}
-	
+	return;
     }
 
     //Escucha los mensajes del servidor
-    public EscuchaServidor(){
+    public void EscuchaServidor(){
 	//Mientras siga conectado con el servidor
 	while (true) {
 	    //Decodifica el mensaje
-	    Mensaje mensaje = c.Recibe();
+	    Mensaje m = c.Recibe();
 
 	    //Si el mensaje no es valido
-	    if(mensaje == null)
+	    if(m == null)
 		return;
 
 	    switch (m.Type){
-		case RESPONSE:
-		    ManejaRespuestas(mensaje);
+		case Tipo.RESPONSE:
+		    ManejaRespuestas(m);
 		    break;
-		case NEW_USER:
-		    clientes.Add(m.Username, ACTIVE);
+		case Tipo.NEW_USER:
+		    clientes.Add(m.Username, Estados.ACTIVE);
 		    break;
-		case NEW_STATUS:
+		case Tipo.NEW_STATUS:
 		    clientes[m.Username] = m.Status;
 		    break;
-		case TEXT_FROM:
+		case Tipo.TEXT_FROM:
 		    Console.Write(m.Username + "- " + m.Text);
 		    break;
-		case PUBLIC_TEXT_FROM:
-		    Console.Write("General -" m.Username "- " + m.Text);
+		case Tipo.PUBLIC_TEXT_FROM:
+		    Console.Write("General -"+ m.Username +"- " + m.Text);
 		    break;
-		case INVITATION:
+		case Tipo.INVITATION:
 		    Console.Write("El usuario" + m.Username + " te ha invitado a la sala "+ m.Roomname);
 		    invitaciones.Add(m.Roomname);
 		    break;
-		case JOINED_ROOM:
+		case Tipo.JOINED_ROOM:
 		    salas[m.Roomname].Add(m.Username);
 		    break;
-		case ROOM_USER_LIST:
-		    salas.Add(m.Roomname, m.Users);
-		    salas[m.Roomname].Add(c.username);
+		case Tipo.ROOM_USERS_LIST:
+		    salas.Add(m.Roomname, new List<string>(m.Users.Keys));
+		    salas[m.Roomname].Add(c.Username);
 		    break;
-		case ROOM_TEXT_FROM:
+		case Tipo.ROOM_TEXT_FROM:
 		    Console.Write(m.Roomname + "-" + m.Username + ":" + m.Text);
 		    break;
-		case LEFT_ROOM:
+		case Tipo.LEFT_ROOM:
 		    salas[m.Roomname].Remove(m.Username);
 		    break;
-		case DISCONNECTED:
-		    cientes.Remove(m.Username);
+		case Tipo.DISCONNECTED:
+		    clientes.Remove(m.Username);
 		    break;
 		default:
 		    Console.Write("Error al recibir la respuesta");
 		    Desconecta();
+		    break;
 	    }
 	}
     }
 
-    public ManejaRespuestas(m Mensaje){
+    public void ManejaRespuestas(Mensaje m){
 	switch (m.Result){
-	    case SUCCESS:
+	    case Respuesta.SUCCESS:
 		ManejaOperacion(m);
 		break;
-	    case NO_SUCH_USER:
+	    case Respuesta.NO_SUCH_USER:
 		Console.Write("El usuario "+ m.Extra + " no existe");
 		break;
-	    case ROOM_ALREADY_EXISTS:
+	    case Respuesta.ROOM_ALREADY_EXISTS:
 		Console.Write("El nombre de sala " + m.Extra + " ya existe en el servidor");
 		break;
-	    case NO_SUCH_USER:
-		Console.Write("El usuario"+ m.Extra + "no puede ser invitado porque no existe");
-		break;
-	    case NO_SUCH_ROOM:
+	    case Respuesta.NO_SUCH_ROOM:
 		Console.Write("La sala"+ m.Extra + "no existe");
 		break;
-	    case NOT_INVITED:
+	    case Respuesta.NOT_INVITED:
 		Console.Write("No fue posible unirse a la sala" + m.Extra + "debido a que no has sido invitado");
 		break;
-	    case NOT_JOINED:
+	    case Respuesta.NOT_JOINED:
 		Console.Write("No formas parte de la sala" + m.Extra);
 		break;
 	    default:
 		Console.WriteLine("Algo salio mal");
 		Desconecta();
+		break;
 	}
+	return;
     }
 
-    public ManejaOperacion(m Mensaje){
+    public void ManejaOperacion(Mensaje m){
 	switch(m.Operation){
-	    case NEW_ROOM:    
-		salas.Add(m.Extra, new List<string> {c.username});
+	    case Tipo.NEW_ROOM:    
+		salas.Add(m.Extra, new List<string> {c.Username});
 		Console.WriteLine("La sala" + m.Extra + " ha sido creada correctamente");
 		break;
-	    case JOIN_ROOM:
+	    case Tipo.JOIN_ROOM:
 		UnirseSala(m.Extra);
 		invitaciones.Remove(m.Extra);
 		break;
 	    default:
 		Console.WriteLine("Ocurrio un error inesperado");
 		Desconecta();
+		break;
 		}
+	return;
     }
 
     //Metodo que explica como usar el chat
-    public UsoServidor(){
+    public void UsoServidor(){
 	Console.WriteLine("Uso del chat:\n" +
 			  "Para actalizar un estado escriba AWAY, BUSY o ACTIVE:\n " +
 			  "                        Actaliza estado - estado\n" +
@@ -239,7 +253,7 @@ public class Servidor{
 			  "Para mandar un mensaje a un usuario escriba\n" +
 			  "                        nombre_del_usuario - mensaje\n" +
 			  "Para mandar mensaje en una sala escriba\n" +
-			  "                        nombre_de_la_sala - mensaje\n"
+			  "                        nombre_de_la_sala - mensaje\n"+
 			  "Para crear una sala escriba:\n" +
 			  "                        Crea - nombre_de_la_sala\n" +
 			  "Para invitar a usuarios a la sala escriba:\n" +
@@ -250,13 +264,15 @@ public class Servidor{
 			  "                        Usuarios - nombre_de_la_sala\n" +
 			  "Para abandonar una sala escriba:\n"+
 			  "                        Abandona - nombre_de_la_sala\n" +
-			  "Para desconectarse del servidor escriba:\n"
+			  "Para desconectarse del servidor escriba:\n"+
 			  "                        Desconecta");
+	return;
     }
 
     //Metodo para enviar el mensaje de desconección  a los usuarios
-    public Desconecta(){
-	Mensaje m = FabricaMensaje(DISCONNECT);
+    public void Desconecta(){
+	Mensaje m = Mensaje.FabricaMensaje(Tipo.DISCONNECT);
 	c.Envia(m);
+	return;
     }
 }

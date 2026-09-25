@@ -1,10 +1,9 @@
 using System;
 using System.Net.Sockets;
-using System.Text.Json;
+using System.Collections.Generic;
 
-
-class Cliente{
-
+class Proyecto1 {
+    
     static void UsoBanderas(){
 	Console.WriteLine("Uso de las banderas\n" +
 	                  "'-h' muestra este mensaje de ayuda\n" +
@@ -12,14 +11,14 @@ class Cliente{
 			  "'-p' para indicar el puerto (1024-65535)\n" +
 	                  "Ejemplo: ./build/cliente.exe -i localhost -p 1234");
     }
-
+    
     static void Main(string[] args){
-
+	
 	string ip = "";
 	int puerto = 0;
-
+	
 	for(int i = 0; i<args.Length; i++)
-	    if (args[i].equals("-h")){
+	    if (args[i] == "-h"){
 		UsoBanderas();
 		return;
 	    }
@@ -28,7 +27,7 @@ class Cliente{
 	    UsoBanderas();
 	    return;
 	}
-
+	
 	//Lee las banderas para guardar los valores
 	for(int i = 0; i<args.Length; i++){
 	    switch(args[i]){
@@ -39,6 +38,7 @@ class Cliente{
 			return;
 		    }
 		    ip = args[i+1];
+		    i++;
 		    break;
 		case "-p":
 		    if(i+1 >= args.Length){
@@ -53,66 +53,64 @@ class Cliente{
 			UsoBanderas();
 			return;
 		    }
+		    i++;
 		    break;
 		default:
 		    UsoBanderas();
 		    return;
 	    }
 	}
-
+	
 	//Checa que el puerto sea valido
 	if(puerto < 1024 || puerto > 65535){
 	    Console.Write("El puerto no es valido");
 	    UsoBanderas();
 	    return;
 	}
-
+	
 	//Pide el nombre de usuario antes de conectarse
 	Console.WriteLine("Para continuar es necesario agregar un username");
 	Console.Write("Username: ");
-
+	
 	string username = Console.ReadLine();
-	username = username.Trim()
-
-	    if (username.Equals("")){
+	username = username.Trim();
+	
+	if (username == ("")){
 	    Console.WriteLine("El nombre de usuario no es válido");
 	    return;
 	}
-
-	if(username.Length >= 8){
+	
+	if(username.Length > 8){
 	    Console.WriteLine("El nombre de usuario debe tener una longitud menor a 9");
 	    return;
 	}
 	
+	//Crea al clinete
+	Cliente c = null;
+	
 	//Checa que la dirección ip sea valida
 	try{
-	    TcpClient cliente = new TcpClient(ip, puerto);
-	    NetworkStream conexion = new cliente.GetStream();
-	}catch(SocketException e){
+	    c = new Cliente(username, ip, puerto);
+	}catch(SocketException){
 	    Console.Write("No fue posible conectarse al servidor");
 	    return;
 	}
-
-	//Crea al clinete
-	Cliente c = new Cliente{username, ip, puerto}
-
+	
+	
+	
 	//Es necesario que escucha y escribe esten en hilos separados
-
+	
 	//Manda llamar a un metodo temporal que:
-	    /*Manda IDENTIFY al servidor
-	      Cuando el servidor responda SUCCESS se manda el mensaje de que se pudo unir al servidor
-	      Si recibe un USER_ALREADY_EXIST se le avisa al usuario y termina el programa
-	      Se manda el mensaje USERS para que nos de los usuarios al momento
-	      Se crea un servidor y se manda llamar al metodo EscuchaServidor */
+	/*Manda IDENTIFY al servidor
+	  Cuando el servidor responda SUCCESS se manda el mensaje de que se pudo unir al servidor
+	  Si recibe un USER_ALREADY_EXIST se le avisa al usuario y termina el programa
+	  Se manda el mensaje USERS para que nos de los usuarios al momento
+	  Se crea un servidor y se manda llamar al metodo EscuchaServidor */
 	Servidor s = c.Temporal();
-	s.UsoServidor();
-
-	s.EscuchaServidor();
-
-   
-		    
+	if(s != null){
+	    s.UsoServidor();
+	    s.EscuchaServidor();
+	}
 	
     }
-
-    //Probablemente aqui tenga que ir el metodo temporal, si no en el servvidor
 }

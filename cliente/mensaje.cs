@@ -1,89 +1,137 @@
 using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 
+[DataContract]
 public class Mensaje {
+
+    //Para poder definir como se van a imprimir las enunmeraciones
+    public static ConvierteTipo ct = new ConvierteTipo();
+    public static ConvierteRespuestas cr = new ConvierteRespuestas();
+    public static ConvierteEstados ce = new ConvierteEstados();
+
     
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    [JsonIgnoreCondition(JsonIgnoreConditionWhenWritingNull)]
     public Tipo Type {get; set;}
     
-    [JsonIgnoreCondition(JsonIgnoreConditionWhenWritingNull)]    
+    [DataMember(Name = "type", EmitDefaultValue = false)]
+    public string Tipo {
+	get {return ct.toStringTipos(this.Type);}
+	set {this.Type = ct.toTipo(value);}
+    }
+    
+    [DataMember(EmitDefaultValue = false)]  
     public string Roomname {get; set;}
     
-    [JsonIgnoreCondition(JsonIgnoreConditionWhenWritingNull)]
+    [DataMember(Name = "username", EmitDefaultValue = false)]
     public string Username {get; set;}
     
-    [JsonIgnoreCondition(JsonIgnoreConditionWhenWritingNull)]
+    [DataMember(EmitDefaultValue = false)]
     public string[] Usernames {get; set;}
 
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    [JsonIgnoreCondition(JsonIgnoreConditionWhenWritingNull)]
     public Estados Status {get; set;}
-
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    [JsonIgnoreCondition(JsonIgnoreConditionWhenWritingNull)]
+    
+    [DataMember(Name = "status", EmitDefaultValue = false)]
+    public string Estado{
+	get {return ce.toStringEstados(this.Status);}
+	set {this.Status = ce.toEstados(value);}
+    }
+    
     public Tipo Operation {get; set;}
-
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    [JsonIgnoreCondition(JsonIgnoreConditionWhenWritingNull)]
+    
+    [DataMember(Name = "operation", EmitDefaultValue = false)]
+    public string Operacion {
+	get {return ct.toStringTipos(this.Operation);}
+	set {this.Operation = ct.toTipo(value);}
+    }
+    
     public Respuesta Result {get; set;}
-
-    [JsonIgnoreCondition(JsonIgnoreConditionWhenWritingNull)]
+    
+    [DataMember(Name = "result", EmitDefaultValue = false)]
+    public string Respuesta {
+	get {return cr.toStringRespuestas(this.Result);}
+	set {this.Result = cr.toRespuesta(value);}
+    }
+    
+    [DataMember(EmitDefaultValue = false)]
     public string Text {get; set;}
-
-    [JsonIgnoreCondition(JsonIgnoreConditionWhenWritingNull)]
+    
     public Dictionary<string,Estados> Users {get; set;}
 
-    [JsonIgnoreCondition(JsonIgnoreConditionWhenWritingNull)]
+    [DataMember(EmitDefaultValue = false)]
+    private Dictionary<string, string> Usuarios {
+        get{
+            if (Users == null)
+		return null;
+            var d = new Dictionary<string, string>();
+            foreach (var usuario in d) 
+		//Para que los estados sean strings
+                d[usuario.Key] = usuario.Value.ToString(); 
+            return d;
+        }
+        set{
+            if (value == null) {
+                Users = null;
+                return;
+            }
+            Users = new Dictionary<string, Estados>();
+            foreach (var usuario in value) 
+                if (Enum.TryParse<Estados>(usuario.Value, true, out Estados estado)) 
+                    Users[usuario.Key] = estado;
+
+	}
+    }
+    
+    [DataMember(EmitDefaultValue = false)]
     public string Extra {get; set;}
 
     
-    public FabricaMensaje(Type t){
-	this.Type = t;
+    public static Mensaje FabricaMensaje(Tipo t){
+	Mensaje m = new Mensaje();
+	m.Type = t;
+	return m;
     }
 
-    public roomname(string r)(Mensaje m){
+    public Mensaje roomname(string r){
 	this.Roomname = r;
 	return this;
     }
 
-    public username(string u)(Mensaje m){
+    public Mensaje username(string u){
 	this.Username = u;
 	return this;
     }
 
-    public usernames(string[] u)(Mensaje m){
+    public Mensaje usernames(string[] u){
 	this.Usernames = u;
 	return this;
     }
 
-    public status(Estado e)(Mensaje m){
+    public Mensaje status(Estados e){
 	this.Status = e;
 	return this;
     }
 
-    public operation(Tipo o)(Mensaje m){
+    public Mensaje operation(Tipo o){
 	this.Operation = o;
 	return this;
     }
 
-    public result(Respuesta r)(Mensaje m){
+    public Mensaje result(Respuesta r){
 	this.Result = r;
 	return this;
     }
 
-    public text(string t)(Mensaje m){
+    public Mensaje text(string t){
 	this.Text = t;
 	return this;
     }
 
-    public users(string[] u)(Mensaje m){
+    public Mensaje users(Dictionary<string, Estados> u){
 	this.Users = u;
 	return this;
     }
 
-    public extra(string e)(Mensaje m){
+    public Mensaje extra(string e){
 	this.Extra = e;
 	return this;
     }
