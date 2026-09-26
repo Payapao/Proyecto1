@@ -3,7 +3,7 @@ using System;
 public class ConvierteRespuestas{
 
     public string toStringRespuestas(Respuesta r){
-	string s = "";
+	string s = null;
 	switch (r) {
 	    case Respuesta.SUCCESS: //La operación se ejecuto exitosamente
 		s = "SUCCESS";

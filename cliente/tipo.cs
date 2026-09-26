@@ -1,6 +1,7 @@
 using System;
 
 public enum Tipo {
+    NONE,
     IDENTIFY,//Identifica al usuario con el servidor
     STATUS, //Cambia el estado del usuario
     USERS, //Solicita la lista de usuarios del chat

@@ -3,7 +3,7 @@ using System;
 public class ConvierteEstados{
 
     public string toStringEstados(Estados e){
-	string s = "";
+	string s = null;
 	switch (e) {
 	    case Estados.ACTIVE:
 		s = "ACTIVE";

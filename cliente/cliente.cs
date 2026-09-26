@@ -64,7 +64,7 @@ public class Cliente {
 
 	//
 	using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(json))) {
-            var serializador = new DataContractJsonSerializer(typeof(Mensaje));
+            var serializador = new DataContractJsonSerializer(typeof(Mensaje), new DataContractJsonSerializerSettings{UseSimpleDictionaryFormat = true});
             return (Mensaje)serializador.ReadObject(ms);
         }
     }
@@ -100,6 +100,7 @@ public class Cliente {
 		}
 		if (m.Type == Tipo.USER_LIST)
 		    return new Servidor(this, m.Users);
+
 	}
 	
     }

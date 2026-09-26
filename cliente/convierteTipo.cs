@@ -3,7 +3,7 @@ using System;
 public class ConvierteTipo {
     
     public string toStringTipos(Tipo t){
-	string s = "";
+	string s = null;
 	switch (t) {
 	    case Tipo.IDENTIFY: //Identifica al usuario con el servidor
 		s = "IDENTIFY";

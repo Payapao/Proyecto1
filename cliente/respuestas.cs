@@ -1,7 +1,7 @@
 using System;
 
 public enum Respuesta {
-
+    NONE,
     SUCCESS,//La operación se ejecuto exitosamente
     USER_ALREADY_EXISTS, //El nombre se usuario ya exite
     NO_SUCH_USER, //El usuario no existe

@@ -56,8 +56,8 @@ public class Mensaje {
     public string Text {get; set;}
     
     public Dictionary<string,Estados> Users {get; set;}
-
-    [DataMember(EmitDefaultValue = false)]
+    
+    [DataMember(Name = "users", EmitDefaultValue = false)]
     private Dictionary<string, string> Usuarios {
         get{
             if (Users == null)
@@ -65,7 +65,7 @@ public class Mensaje {
             var d = new Dictionary<string, string>();
             foreach (var usuario in Users) 
 		//Para que los estados sean strings
-                d[usuario.Key] = usuario.Value.ToString(); 
+                d[usuario.Key] = usuario.Value.ToString();
             return d;
         }
         set{
