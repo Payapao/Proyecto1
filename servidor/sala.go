@@ -25,7 +25,14 @@ func (s Sala) getNombre() string{
 }
 
 func (s Sala) getClientes() map[string]*Cliente{
-	return s.clientes
+	s.candado.RLock();
+	defer s.candado.RUnlock()
+
+	copia := make(map[string]*Cliente)
+	for nombre, cliente := range s.clientes{
+		copia[nombre] = cliente
+	}
+	return copia
 }
 
 func (s Sala) getInvitados() map[string]*Cliente{
@@ -54,13 +61,13 @@ func (s *Sala) Invitado(cliente *Cliente) bool {
 }
 
 func (s *Sala) Invita(c *Cliente){
-	s.candado.Lock()
-	defer s.candado.Unlock()
-
 	if s.Invitado(c) || s.Existe(c){
 		return
 	}
 
+	s.candado.Lock()
+	defer s.candado.Unlock()
+	
 	s.invitados[c.getUsuario()] = c
 	return
 }
@@ -84,10 +91,11 @@ func (s *Sala) EliminaCliente(cliente *Cliente){
 		return
 	}
 	s.candado.Lock()
-	defer s.candado.Unlock()
 	
 	//Elimina al usuario de la sala
 	delete(s.clientes, cliente.getUsuario())
+
+	s.candado.Unlock()
 
 	//Envia el mensaje de usuario eliminado al resto de la sala
 	mt := FabricaMensaje(LEFT_ROOM).roomname(s.getNombre()).username(cliente.getUsuario())

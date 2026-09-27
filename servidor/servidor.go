@@ -241,7 +241,7 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		mt := FabricaMensaje(NEW_STATUS).username(c.getUsuario()).status(m.Status)
 		//Manda mensaje de confirmación al cliente
 		//No pertenece al protocolo pero lo agrege
-		mc := FabricaMensaje(RESPONE).operation(STATUS).result(SUCCESS).status(m.Status)
+		mc := FabricaMensaje(RESPONSE).operation(STATUS).result(SUCCESS).status(m.Status)
 		//Envia el mensaje
 		s.EnviaTodos(c, mc, mt)
 		
@@ -302,7 +302,7 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		if sala == nil {
 			return
 		}
-
+		
 		//Agrega al cliente en la lista de invitados y envia el mensaje
 		for _, cliente := range m.Usernames {
 			ct, _ := s.usuarios[cliente]
@@ -389,7 +389,12 @@ func (s *Servidor) Desconecta(c *Cliente){
 	//Elimina al cliente de las salas
 	for _, sala := range s.getSalas() {
 		if len(sala.getClientes()) == 1 {
-			s.EliminaSala(sala)
+			for cliente, _ := range sala.getClientes(){
+				if cliente == c.getUsuario(){
+					s.EliminaSala(sala)
+					continue
+				}
+			}
 		} 
 		sala.EliminaCliente(c)
 	}
