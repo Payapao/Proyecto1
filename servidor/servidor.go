@@ -299,16 +299,12 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		if sala == nil {
 			return
 		}
-		//Si el cliente no pertenece a la sala ignora el json
-		if !sala.Existe(c){
-			return
-		}
 
 		//Agrega al cliente en la lista de invitados y envia el mensaje
 		for _, cliente := range m.Usernames {
 			ct, _ := s.usuarios[cliente]
 			sala.Invita(ct)
-			ct.EnviaMensaje(FabricaMensaje(INVITATION).username(ct.getUsuario()).roomname(m.Roomname))
+			ct.EnviaMensaje(FabricaMensaje(INVITATION).username(c.getUsuario()).roomname(m.Roomname))
 		}
 
 	case JOIN_ROOM:
@@ -412,12 +408,24 @@ func (s *Servidor) Verifica(c *Cliente, m Mensaje, tipo Tipo) *Sala {
 		return nil
 	}
 	switch tipo {
-	case LEAVE_ROOM, ROOM_TEXT, ROOM_USERS:
+	case LEAVE_ROOM, ROOM_TEXT, ROOM_USERS, INVITE:
 		//Verifica que el usuario este en el cuarto
+		//En el caso de INVITE no estaba en el protocolo pero lo agrege :)
 		if !sala.Existe(c) {
 			mc := FabricaMensaje(RESPONSE).operation(tipo).result(NOT_JOINED).extra(m.Roomname)
 			s.EnviaTodos(c, mc, nil)
 			return nil
+		}
+		//Verifica que todos los usuarios existan en el servidor
+		if(tipo == INVITE){
+			for _, invitado := range m.Usernames {
+				_, e := s.usuarios[invitado]
+				if ! e {
+					mc := FabricaMensaje(RESPONSE).operation(INVITE).result(NO_SUCH_USER).extra(invitado)
+					s.EnviaTodos(c, mc, nil)
+					return nil
+				}
+			}
 		}
 	case JOIN_ROOM:
 		//Verifica que el usuario este invitado en el cuarto
@@ -426,16 +434,6 @@ func (s *Servidor) Verifica(c *Cliente, m Mensaje, tipo Tipo) *Sala {
 			s.EnviaTodos(c, mc, nil)
 			return nil
 		}
-	case INVITE:
-		for _, invitado := range m.Usernames {
-			_, e := s.usuarios[invitado]
-			if ! e {
-				mc := FabricaMensaje(RESPONSE).operation(INVITE).result(NO_SUCH_USER).extra(invitado)
-				s.EnviaTodos(c, mc, nil)
-				return nil
-			}	
-		}
-		
 	}
 	return sala
 }
