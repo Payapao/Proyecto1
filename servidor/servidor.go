@@ -325,7 +325,7 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 
 		//Fabrica y manda el mensaje correspondiente 
 		mc := FabricaMensaje(RESPONSE).operation(JOIN_ROOM).result(SUCCESS).extra(m.Roomname)
-		mt := FabricaMensaje(JOIN_ROOM).roomname(m.Roomname).username(c.getUsuario())
+		mt := FabricaMensaje(JOINED_ROOM).roomname(m.Roomname).username(c.getUsuario())
 		sala.EnviaSala(c, mc, mt)
 
 	case ROOM_USERS:
