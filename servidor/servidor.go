@@ -239,8 +239,11 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 
 		//Fabrica el mensaje
 		mt := FabricaMensaje(NEW_STATUS).username(c.getUsuario()).status(m.Status)
+		//Manda mensaje de confirmación al cliente
+		//No pertenece al protocolo pero lo agrege
+		mc := FabricaMensaje(RESPONE).operation(STATUS).result(SUCCESS).status(m.Status)
 		//Envia el mensaje
-		s.EnviaTodos(c, nil, mt)
+		s.EnviaTodos(c, mc, mt)
 		
 	case USERS:
 		//Crea el map de los usuarios
