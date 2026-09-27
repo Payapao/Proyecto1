@@ -19,13 +19,13 @@ public class Mensaje {
 	set {this.Type = ct.toTipo(value);}
     }
     
-    [DataMember(EmitDefaultValue = false)]  
+    [DataMember(Name = "roomname", EmitDefaultValue = false)]  
     public string Roomname {get; set;}
     
     [DataMember(Name = "username", EmitDefaultValue = false)]
     public string Username {get; set;}
     
-    [DataMember(EmitDefaultValue = false)]
+    [DataMember(Name = "usernames", EmitDefaultValue = false)]
     public string[] Usernames {get; set;}
 
     public Estados Status {get; set;}
@@ -52,7 +52,7 @@ public class Mensaje {
 	set {this.Result = cr.toRespuesta(value);}
     }
     
-    [DataMember(EmitDefaultValue = false)]
+    [DataMember(Name = "text", EmitDefaultValue = false)]
     public string Text {get; set;}
     
     public Dictionary<string,Estados> Users {get; set;}
@@ -81,7 +81,7 @@ public class Mensaje {
 	}
     }
     
-    [DataMember(EmitDefaultValue = false)]
+    [DataMember(Name = "extra", EmitDefaultValue = false)]
     public string Extra {get; set;}
 
     

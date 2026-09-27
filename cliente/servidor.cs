@@ -31,60 +31,128 @@ public class Servidor {
 	string[] separada = s.Split('-');
 
 	//Para que no afecten los espacios antes o despues
-	for(int i = 0; i<separada.Length; i++)
+	for(int i = 0; i<separada.Length; i++){
 	    separada[i] = separada[i].Trim();
+	    //Si alguna de las cadenas es vacia lo rechaza
+	    if(separada[i] == ""){
+		Console.WriteLine("Ninguno de los campos puede estar vacio");
+		return;
+	    }
+		
+	}
 	
 	switch (separada[0]){
 	    case "Actualiza estado":
 	    case "actualiza estado":
 	    case "ACTUALIZA ESTADO":
-	    if(separada[1] == ("ACTIVE") || separada[1] == ("active") || separada[1] ==("Active")){
-		Mensaje me = Mensaje.FabricaMensaje(Tipo.STATUS).status(Estados.ACTIVE);
-		c.Envia(me);
-	    }else if(separada[1] == ("AWAY") || separada[1] == ("away") || separada[1] == ("Away")){
-		Mensaje me = Mensaje.FabricaMensaje(Tipo.STATUS).status(Estados.AWAY);
-		c.Envia(me);
-	    }else if(separada[1] == ("BUSY") || separada[1] == ("busy") || separada[1] == ("Busy")){
-		Mensaje me = Mensaje.FabricaMensaje(Tipo.STATUS).status(Estados.BUSY);
-		c.Envia(me);
-	    }else
-		Console.WriteLine("El estado no es válido");
-	    break;
+		if(separada.Length != 2){
+		    Console.WriteLine("El formato no es el correcto para la operación");
+		    UsoServidor();
+		    break;
+		}
+		if(separada[1] == ("ACTIVE") || separada[1] == ("active") || separada[1] ==("Active")){
+		    Mensaje me = Mensaje.FabricaMensaje(Tipo.STATUS).status(Estados.ACTIVE);
+		    c.Envia(me);
+		}else if(separada[1] == ("AWAY") || separada[1] == ("away") || separada[1] == ("Away")){
+		    Mensaje me = Mensaje.FabricaMensaje(Tipo.STATUS).status(Estados.AWAY);
+		    c.Envia(me);
+		}else if(separada[1] == ("BUSY") || separada[1] == ("busy") || separada[1] == ("Busy")){
+		    Mensaje me = Mensaje.FabricaMensaje(Tipo.STATUS).status(Estados.BUSY);
+		    c.Envia(me);
+		}else
+		    Console.WriteLine("El estado no es válido");
+		break;
 	    case "usuarios":
 	    case "Usuarios":
 	    case "USUARIOS":
-		Console.WriteLine("Clientes " + " - " + " Estados");
-		if(separada[1] == "General")
+		if(separada.Length != 2){
+		    Console.WriteLine("El formato no es el correcto para la operación");
+		    UsoServidor();
+		    break;
+		}
+		if(separada[1] == "General"){
 		    lock(candado){
+			Console.WriteLine("Clientes " + " - " + " Estados");
 			foreach(var cliente in clientes)
 			    Console.WriteLine(cliente.Key + " - " + cliente.Value);
 		    }
-		else{
+		    break;
+		}else{
 		    lock(candado){
 			foreach(var sala in salas)
-			    if(sala.Key == separada[1])
+			    if(sala.Key == separada[1]){
+				Console.WriteLine("Clientes " + " - " + " Estados");
 				foreach(var cliente in sala.Value){
 				    Estados e = clientes[cliente];
-				    Console.WriteLine(cliente + "-" + e );
+				    Console.WriteLine(cliente + " - " + e );
+				    
 				}
+				return;
+			    }
 		    }
 		    Console.WriteLine("Es necesario pertenecer a la sala para acceder a la lista de usuarios");
 		}		
 		break;
+	    case "salas":
+	    case "Salas":
+	    case "SALAS":
+		if(separada.Length != 1){
+		    Console.WriteLine("El formato no es el correcto para la operación");
+		    UsoServidor();
+		    break;
+		}
+		if(salas.Count == 0)
+		    Console.WriteLine("Aún no has sido invitado a ninguna sala");
+		else{
+		    Console.WriteLine("Las salas a las que perteneces son:");
+		    lock(candado)
+			foreach(var sala in salas.Keys)
+			    Console.WriteLine(sala);    
+		}
+		break;
+	    case "invitaciones":
+	    case "Invitaciones":
+	    case "INVITACIONES":
+		if(separada.Length != 1){
+		    Console.WriteLine("El formato no es el correcto para la operación");
+		    UsoServidor();
+		    break;
+		}
+		if(invitaciones.Count == 0)
+		    Console.WriteLine("Aún no has sido invitado a ninguna sala");
+		else{
+		    Console.WriteLine("Las salas a las que has sido invitado son:");
+		    lock(candado)
+			foreach(string sala in invitaciones)
+			    Console.WriteLine(sala);    
+		}
+		break;
 	    case "Crea":
 	    case "CREA":
 	    case "crea":
+		if(separada.Length != 2){
+		    Console.WriteLine("El formato no es el correcto para la operación");
+		    UsoServidor();
+		    break;
+		}
 		Mensaje mc = Mensaje.FabricaMensaje(Tipo.NEW_ROOM).roomname(separada[1]);
 		c.Envia(mc);
 		break;
 	    case "Invita":
 	    case "INVITA":
 	    case "invita":
-		string[] invitados = separada[1].Split(',');
-		foreach(string invitado in invitados)
-		    if (!clientes.ContainsKey(invitado)){
-			Console.WriteLine("El usuario "+ invitado+ " no existe");
-			break;
+		if(separada.Length != 3){
+		    Console.WriteLine("El formato no es el correcto para la operación");
+		    UsoServidor();
+		    break;
+		}
+		string[] invitados = separada[2].Split(',');
+		lock(candado){
+		    foreach(string invitado in invitados)
+			if (!clientes.ContainsKey(invitado)){
+			    Console.WriteLine("El usuario "+ invitado+ " no existe");
+			    break;
+			}
 		    }
 		Mensaje mi = Mensaje.FabricaMensaje(Tipo.INVITE).roomname(separada[1]).usernames(invitados);
 		c.Envia(mi);
@@ -92,6 +160,11 @@ public class Servidor {
 	    case "UNIRSE":
 	    case "Unirse":
 	    case "unirse":
+		if(separada.Length != 2){
+		    Console.WriteLine("El formato no es el correcto para la operación");
+		    UsoServidor();
+		    break;
+		}
 		lock(candado){
 		    foreach(string invitado in invitaciones)
 			if(invitado == separada[1]){
@@ -101,11 +174,16 @@ public class Servidor {
 			    break;
 			}
 		    }
-		Console.Write("Es necesario que estes invitado a la sala para unirtea la sala "+  separada[1]);
+		Console.WriteLine("Es necesario que estes invitado a la sala para unirtea la sala "+  separada[1]);
 		break;
 	    case "ABANDONA":
 	    case "Abandona":
 	    case "abandona":
+		if(separada.Length != 2){
+		    Console.WriteLine("El formato no es el correcto para la operación");
+		    UsoServidor();
+		    break;
+		}
 		lock(candado){
 		    foreach(string sala in salas.Keys)
 			if(sala == separada[1]){
@@ -119,35 +197,41 @@ public class Servidor {
 	    case "DESCONECTA":
 	    case "Desconecta":
 	    case "desconecta":
+		if(separada.Length != 1){
+		    Console.WriteLine("El formato no es el correcto para la operación");
+		    UsoServidor();
+		    break;
+		}
 	    Desconecta();
 	    break;
 	    default:
-		if (separada.Length == 2)
-		    if(separada[0] == "TODOS" || separada[0] == "Todos" || separada[0] == "todos"){
-			Mensaje mt = Mensaje.FabricaMensaje(Tipo.PUBLIC_TEXT).text(separada[1]);
-			c.Envia(mt);
-		    }else {
-			lock(candado){
-			    foreach (string usuario in clientes.Keys)
-				if (usuario == separada[0]){
-				    Mensaje mu = Mensaje.FabricaMensaje(Tipo.TEXT).username(usuario).text(separada[1]);
-				    c.Envia(mu);
-				    break;
+		if(separada.Length != 2){
+		    Console.WriteLine("El formato no es el correcto para la operación");
+		    UsoServidor();
+		    break;
+		}
+		if(separada[0] == "TODOS" || separada[0] == "Todos" || separada[0] == "todos"){
+		    Mensaje mt = Mensaje.FabricaMensaje(Tipo.PUBLIC_TEXT).text(separada[1]);
+		    c.Envia(mt);
+		    return;
+		}else {
+		    lock(candado){
+			foreach (string usuario in clientes.Keys)
+			    if (usuario == separada[0]){
+				Mensaje mu = Mensaje.FabricaMensaje(Tipo.TEXT).username(usuario).text(separada[1]);
+				c.Envia(mu);
+				return;
 				}
 			
-			    foreach (string sala in salas.Keys)
-				if(sala == separada[0]){
-				    Mensaje ms = Mensaje.FabricaMensaje(Tipo.ROOM_TEXT).roomname(separada[1]);
-				    c.Envia(ms);
-				    break;
-				}
+			foreach (string sala in salas.Keys)
+			    if(sala == separada[0]){
+				Mensaje ms = Mensaje.FabricaMensaje(Tipo.ROOM_TEXT).roomname(separada[1]);
+				c.Envia(ms);
+				return;
+			    }
 			}
-			//No se encontro el usuario o sala
-			Console.WriteLine("El usuario o la sala "+ separada[0]+ " no existe");
-		    }
-		else{
-		    Console.WriteLine("El formato no coincide con el uso del chat");
-		    UsoServidor();
+		    //No se encontro el usuario o sala
+		    Console.WriteLine("El usuario o la sala "+ separada[0]+ " no existe");
 		}
 		break;	    
 	}
@@ -186,7 +270,7 @@ public class Servidor {
 		    Console.WriteLine("General - "+ m.Username +" - " + m.Text);
 		    break;
 		case Tipo.INVITATION:
-		    Console.WriteLine("El usuario " + m.Username + " te ha invitado a la sala "+ m.Roomname);
+		    Console.WriteLine("El usuario " + m.Username + " te ha invitado a la sala " + m.Roomname);
 		    lock(candado){
 			invitaciones.Add(m.Roomname);
 		    }
@@ -202,7 +286,7 @@ public class Servidor {
 		    }
 		    break;
 		case Tipo.ROOM_TEXT_FROM:
-		    Console.Write(m.Roomname + "-" + m.Username + ":" + m.Text);
+		    Console.WriteLine(m.Roomname + "-" + m.Username + ":" + m.Text);
 		    break;
 		case Tipo.LEFT_ROOM:
 		    lock(candado){
@@ -261,6 +345,11 @@ public class Servidor {
 	    case Tipo.JOIN_ROOM:
 		UnirseSala(m.Extra);
 		break;
+		//Este caso se agrego por una extencion al protocolo
+	    case Tipo.STATUS:
+		lock(candado)
+		    clientes[c.Username] = m.Status;
+		break;
 	    default:
 		Console.WriteLine("Ocurrio un error inesperado");
 		Desconecta();
@@ -276,6 +365,10 @@ public class Servidor {
 			  "                        Actaliza estado - estado\n" +
 			  "Para obtener la lista de usuarios del servidor escriba:\n" +
 			  "                        Usuarios - General\n" +
+			  "Para obtener la lista de las salas a las que perteneces:\n" +
+			  "                        Salas\n" +
+			  "Para obtener la lista de las salas a las que has sido invitado:\n" +
+			  "                        Invitaciones\n" +
 			  "Para mandar un mensaje a todos escriba:\n" +
 			  "                        Todos - mensaje\n" +
 			  "Para mandar un mensaje a un usuario escriba\n" +
@@ -285,7 +378,7 @@ public class Servidor {
 			  "Para crear una sala escriba:\n" +
 			  "                        Crea - nombre_de_la_sala\n" +
 			  "Para invitar a usuarios a la sala escriba:\n" +
-			  "                        Invita - usuario1, usuario2, usuario3\n" +
+			  "                        Invita - nombre_de_la_sala - usuario1, usuario2, usuario3\n" +
 			  "Para unirse a una sala a la que fue invitado escriba\n" +
 			  "                        Unirse - nombre_de_la_sala\n" +
 			  "Para obtener la lista de usuarios de una sala en especifico escrba\n" +
