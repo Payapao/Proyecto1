@@ -277,15 +277,16 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		s.EnviaTodos(c, nil, mt)
 
 	case NEW_ROOM:
-		//Verifica que el nombre de la sala tenga una longitud menor o igual a 16
-		if len(m.Roomname) > 16{
+		//Verifica que el nombre de la sala tenga una longitud menor o igual a 16 y no sea vacia
+		cuarto := strings.TrimSpace(m.Roomname)
+		if len(cuarto) > 16 || cuarto == ""{
 			return
 		}
 		//Crea la sala
-		sala, err := s.NuevaSala(m.Roomname)
+		sala, err := s.NuevaSala(cuarto)
 		//Significa que la sala ya existe y manda el mensaje correspondiente
 		if err != nil {
-			mc := FabricaMensaje(RESPONSE).operation(NEW_ROOM).result(ROOM_ALREADY_EXISTS).extra(m.Roomname)
+			mc := FabricaMensaje(RESPONSE).operation(NEW_ROOM).result(ROOM_ALREADY_EXISTS).extra(cuarto)
 			s.EnviaTodos(c, mc, nil)
 			return
 		}
@@ -293,7 +294,7 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		//Agrega al cliente
 		sala.AgregaCliente(c)
 		//Manda el mensaje de confirmación
-		mc := FabricaMensaje(RESPONSE).operation(NEW_ROOM).result(SUCCESS).extra(m.Roomname)
+		mc := FabricaMensaje(RESPONSE).operation(NEW_ROOM).result(SUCCESS).extra(cuarto)
 		s.EnviaTodos(c, mc, nil)
 		
 	case INVITE:
@@ -306,8 +307,10 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		//Agrega al cliente en la lista de invitados y envia el mensaje
 		for _, cliente := range m.Usernames {
 			ct, _ := s.usuarios[cliente]
-			sala.Invita(ct)
-			ct.EnviaMensaje(FabricaMensaje(INVITATION).username(c.getUsuario()).roomname(m.Roomname))
+			bool := sala.Invita(ct)
+			if bool {
+				ct.EnviaMensaje(FabricaMensaje(INVITATION).username(c.getUsuario()).roomname(m.Roomname))
+			}
 		}
 
 	case JOIN_ROOM:

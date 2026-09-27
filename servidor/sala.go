@@ -60,16 +60,17 @@ func (s *Sala) Invitado(cliente *Cliente) bool {
 	return false
 }
 
-func (s *Sala) Invita(c *Cliente){
+//Para invitar a los usuarios a la sala
+func (s *Sala) Invita(c *Cliente) bool {
 	if s.Invitado(c) || s.Existe(c){
-		return
+		return false
 	}
 
 	s.candado.Lock()
 	defer s.candado.Unlock()
 	
 	s.invitados[c.getUsuario()] = c
-	return
+	return true
 }
 
 //Función para agregar clientes a la sala -Es necesario pasar un usuario valido
