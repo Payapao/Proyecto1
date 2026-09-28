@@ -88,20 +88,28 @@ func (s *Sala) AgregaCliente(cliente *Cliente) {
 
 //Función para eliminar un cliente de una sala
 func (s *Sala) EliminaCliente(cliente *Cliente){
-	if !s.Existe(cliente){
+	if !s.Existe(cliente) && !s.Invitado(cliente){
 		return
 	}
-	s.candado.Lock()
-	
-	//Elimina al usuario de la sala
-	delete(s.clientes, cliente.getUsuario())
 
-	s.candado.Unlock()
+	if(s.Existe(cliente)){
+		s.candado.Lock()
+		//Elimina al usuario de la sala
+		delete(s.clientes, cliente.getUsuario())
+		s.candado.Unlock()
 
-	//Envia el mensaje de usuario eliminado al resto de la sala
-	mt := FabricaMensaje(LEFT_ROOM).roomname(s.getNombre()).username(cliente.getUsuario())
-	s.EnviaSala(cliente, nil, mt)
-	
+		//Envia el mensaje de usuario eliminado al resto de la sala
+		mt := FabricaMensaje(LEFT_ROOM).roomname(s.getNombre()).username(cliente.getUsuario())
+		s.EnviaSala(cliente, nil, mt)
+	}else{
+		s.candado.Lock()
+		//Elimina al usuario de la lista de invitados
+		delete(s.invitados, cliente.getUsuario())
+		s.candado.Unlock()
+
+		//No manda ningun mensaje porque el usuario aún no se unia a la sala, permite que se vuelva a enviar la invitación a un futuro usuario con su nombre
+	}
+
 	return
 }
 

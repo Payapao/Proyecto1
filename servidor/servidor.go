@@ -345,7 +345,7 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		sala.candado.RUnlock()
 
 		//Fabrica y envia el mensaje
-		mc := FabricaMensaje(ROOM_USERS_LIST).users(users)
+		mc := FabricaMensaje(ROOM_USERS_LIST).roomname(m.Roomname).users(users)
 		s.EnviaTodos(c, mc, nil)
 
 	case ROOM_TEXT:
@@ -375,13 +375,8 @@ func (s *Servidor) ProcesaMensaje(m Mensaje, c *Cliente){
 		}
 		
 		//Por practicidad el mensaje lo envia el metodo EliminaCliente
-
-	case DISCONNECT:
-		//Manda a llamar el metodo desconecta
-		s.Desconecta(c)
-		
 	default:
-		//Nunca deberia pasar este default
+		//Es el caso en el que manda DICONNECT
 		return
 	}
 	return

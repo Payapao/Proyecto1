@@ -59,6 +59,7 @@ public class Cliente {
 	string json = decodificador.ReadLine();
 	if(json == null){
 	    Console.WriteLine("El servidor cerro la conexión");
+	    Environment.Exit(0);
 	    return null;
 	}
 

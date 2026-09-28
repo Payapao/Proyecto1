@@ -73,8 +73,9 @@ public class Servidor {
 		if(separada[1] == "General"){
 		    lock(candado){
 			Console.WriteLine("Clientes " + " - " + " Estados");
+			int cont = 0;
 			foreach(var cliente in clientes)
-			    Console.WriteLine(cliente.Key + " - " + cliente.Value);
+			    Console.WriteLine(++cont +") " + cliente.Key + " - " + cliente.Value);
 		    }
 		    break;
 		}else{
@@ -82,9 +83,10 @@ public class Servidor {
 			foreach(var sala in salas)
 			    if(sala.Key == separada[1]){
 				Console.WriteLine("Clientes " + " - " + " Estados");
+				int cont = 0;
 				foreach(var cliente in sala.Value){
 				    Estados e = clientes[cliente];
-				    Console.WriteLine(cliente + " - " + e );
+				    Console.WriteLine(++cont +") " + cliente + " - " + e );
 				    
 				}
 				return;
@@ -105,9 +107,11 @@ public class Servidor {
 		    Console.WriteLine("Aún no has sido invitado a ninguna sala");
 		else{
 		    Console.WriteLine("Las salas a las que perteneces son:");
-		    lock(candado)
+		    lock(candado){
+			int cont = 0;
 			foreach(var sala in salas.Keys)
-			    Console.WriteLine(sala);    
+			    Console.WriteLine(++cont +") " + sala);
+		    }
 		}
 		break;
 	    case "invitaciones":
@@ -122,9 +126,11 @@ public class Servidor {
 		    Console.WriteLine("Aún no has sido invitado a ninguna sala");
 		else{
 		    Console.WriteLine("Las salas a las que has sido invitado son:");
-		    lock(candado)
+		    lock(candado){
+			int cont = 0;
 			foreach(string sala in invitaciones)
-			    Console.WriteLine(sala);    
+			    Console.WriteLine(++cont + ") " + sala);
+		    }
 		}
 		break;
 	    case "Crea":
@@ -147,11 +153,18 @@ public class Servidor {
 		    break;
 		}
 		string[] invitados = separada[2].Split(',');
+		for(int i = 0; i<invitados.Length; i++){
+		    invitados[i] = invitados[i].Trim();
+		    if(invitados[i] == ""){
+			Console.WriteLine("No se pueden ingresar comas consecutivas");
+			return;
+		    }
+		}
 		lock(candado){
 		    foreach(string invitado in invitados)
 			if (!clientes.ContainsKey(invitado)){
-			    Console.WriteLine("El usuario "+ invitado+ " no existe");
-			    break;
+			    Console.WriteLine("El usuario "+ invitado + " no existe");
+			    return;
 			}
 		    }
 		Mensaje mi = Mensaje.FabricaMensaje(Tipo.INVITE).roomname(separada[1]).usernames(invitados);
@@ -165,16 +178,14 @@ public class Servidor {
 		    UsoServidor();
 		    break;
 		}
-		lock(candado){
-		    foreach(string invitado in invitaciones)
-			if(invitado == separada[1]){
-			    Mensaje mu = Mensaje.FabricaMensaje(Tipo.JOIN_ROOM).roomname(separada[1]);
-			    c.Envia(mu);
-			    invitaciones.Remove(invitado);
-			    break;
-			}
+		lock(candado)
+		    if(invitaciones.Contains(separada[1])){
+			Mensaje mu = Mensaje.FabricaMensaje(Tipo.JOIN_ROOM).roomname(separada[1]);
+			c.Envia(mu);
+			invitaciones.Remove(separada[1]);
+			return;
 		    }
-		Console.WriteLine("Es necesario que estes invitado a la sala para unirtea la sala "+  separada[1]);
+		Console.WriteLine("Es necesario que estes invitado para unirte a la sala "+  separada[1]);
 		break;
 	    case "ABANDONA":
 	    case "Abandona":
@@ -184,14 +195,13 @@ public class Servidor {
 		    UsoServidor();
 		    break;
 		}
-		lock(candado){
-		    foreach(string sala in salas.Keys)
-			if(sala == separada[1]){
-			    Mensaje ma = Mensaje.FabricaMensaje(Tipo.LEAVE_ROOM).roomname(separada[1]);
-			    c.Envia(ma);
-			    break;
-			}
-		}
+		lock(candado)
+		    if(salas.ContainsKey(separada[1])){
+			Mensaje ma = Mensaje.FabricaMensaje(Tipo.LEAVE_ROOM).roomname(separada[1]);
+			c.Envia(ma);
+			salas.Remove(separada[1]);
+			return;
+		    }
 		Console.WriteLine("No eres miembro de la sala "+separada[1]);
 		break;
 	    case "DESCONECTA":
@@ -225,7 +235,7 @@ public class Servidor {
 			
 			foreach (string sala in salas.Keys)
 			    if(sala == separada[0]){
-				Mensaje ms = Mensaje.FabricaMensaje(Tipo.ROOM_TEXT).roomname(separada[1]);
+				Mensaje ms = Mensaje.FabricaMensaje(Tipo.ROOM_TEXT).roomname(separada[0]).text(separada[1]);
 				c.Envia(ms);
 				return;
 			    }
@@ -256,6 +266,7 @@ public class Servidor {
 		case Tipo.NEW_USER:
 		    lock(candado){
 			clientes.Add(m.Username, Estados.ACTIVE);
+			Console.WriteLine(m.Username + " se unio al chat");
 		    }
 		    break;
 		case Tipo.NEW_STATUS:
@@ -264,10 +275,10 @@ public class Servidor {
 		    }
 		    break;
 		case Tipo.TEXT_FROM:
-		    Console.WriteLine(m.Username + "- " + m.Text);
+		    Console.WriteLine(">>> "+ m.Username + ": " + m.Text);
 		    break;
 		case Tipo.PUBLIC_TEXT_FROM:
-		    Console.WriteLine("General - "+ m.Username +" - " + m.Text);
+		    Console.WriteLine(">>> General-"+ m.Username +": " + m.Text);
 		    break;
 		case Tipo.INVITATION:
 		    Console.WriteLine("El usuario " + m.Username + " te ha invitado a la sala " + m.Roomname);
@@ -278,6 +289,7 @@ public class Servidor {
 		case Tipo.JOINED_ROOM:
 		    lock(candado){
 			salas[m.Roomname].Add(m.Username);
+			Console.WriteLine(m.Username + " se unio a la sala "+ m.Roomname);
 		    }
 		    break;
 		case Tipo.ROOM_USERS_LIST:
@@ -286,17 +298,19 @@ public class Servidor {
 		    }
 		    break;
 		case Tipo.ROOM_TEXT_FROM:
-		    Console.WriteLine(m.Roomname + "-" + m.Username + ":" + m.Text);
+		    Console.WriteLine(">>> "+m.Roomname + "-" + m.Username + ": " + m.Text);
 		    break;
 		case Tipo.LEFT_ROOM:
 		    lock(candado){
 			salas[m.Roomname].Remove(m.Username);
 		    }
+		    Console.WriteLine(m.Username + " dejo la sala "+ m.Roomname);
 		    break;
 		case Tipo.DISCONNECTED:
 		    lock(candado){
 			clientes.Remove(m.Username);
 		    }
+		    Console.WriteLine(m.Username + " dejo el chat");
 		    break;
 		default:
 		    Console.WriteLine("Error al recibir la respuesta");
