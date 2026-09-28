@@ -1,16 +1,125 @@
-\documentclass{article}
+\documentclass[12pt]{article}
 
-\usepackage[english]{babel}
-
-
-\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
-
-\usepackage{amsmath}
-\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+%\usepackage{forest}
+\usepackage{dirtree}
+\usepackage{fontawesome5}
+\usepackage[utf8]{inputenc}
+\usepackage{multicol}
+\usepackage[T1]{fontenc}
+\usepackage{tabularx}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{lmodern}
+\usepackage{helvet}
+\usepackage[hidelinks, breaklinks=true]{hyperref}
 \usepackage[svgnames]{xcolor}
-\usepackage{hyperref}
-\usepackage{float}
-\definecolor{antiquefuchsia}{rgb}{0.57, 0.36, 0.51}
+\usepackage[table]{xcolor}
+\usepackage[framemethod=tikz]{mdframed}
+\usepackage[customcolors]{hf-tikz}
+\usepackage[most]{tcolorbox}
+\usetikzlibrary{shadows}
+\usepackage{tgheros}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{listings}
+\usepackage[spanish]{babel} 
+\usepackage{xcolor,graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes,positioning,shadows,trees}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% colors
+\definecolor{softpurple}{RGB}{145,105,160}
+\definecolor{antiquefuchsia}{RGB}{95,60,110}
+\titleformat{\section}
+  {\color{antiquefuchsia}\normalfont\Large\bfseries}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\color{antiquefuchsia}\normalfont\large\bfseries}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\color{antiquefuchsia}\normalfont\normalsize\bfseries}
+  {\thesubsubsection}{1em}{}
+%%%%%%%%%%%%%%%%%%%%%%
+% Mis comandos
+\newcounter{recordatorioCounter}
+\newcommand{\recordatorio}{%
+  \stepcounter{recordatorioCounter}% avanza el contador
+  \textbf{\textcolor{antiquefuchsia}{Recordatorio \therecordatorioCounter : }}%
+}
+\newcommand{\pb}[1]{\textcolor{softpurple}{\textbf{#1}}}
+
+
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{antiquefuchsia!23},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                   
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% Icono Carpeta
+\newcommand{\foldericon}{\faFolderOpen~}
+
+\definecolor{foldercolor}{RGB}{255, 193, 7}
+\definecolor{pdfcolor}{RGB}{220, 53, 69}
+\definecolor{readmecolor}{RGB}{40, 167, 69}
+
+\renewcommand{\foldericon}{\textcolor{foldercolor}{\faFolder}}
+\newcommand{\pdficon}{\textcolor{pdfcolor}{\faFilePdf}}
+\newcommand{\txticon}{\textcolor{txtcolor}{\faFileAlt}}
+\newcommand{\zipicon}{\textcolor{gray}{\faFileArchive}}
+
+
+
+% Set up fancy header/footer
+\pagestyle{fancy}
+\fancyhead[LO,L]{UNAM}
+\fancyhead[RO,R]{\textit{\textsc{Proyecto 1}}}   
+\fancyfoot[LO,L]{Facultad De Ciencias, 2027-I}
+\fancyfoot[CO,C]{\thepage}
+\fancyfoot[RO,R]{Modelado y Programación}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+%%%%%%%%%%%%%%%%%%%%%%
+
+\newdimen\digitwidth
+\settowidth\digitwidth{0}
+\def~{\hspace{\digitwidth}}
+
+% Cambiar color de secciones
+\titleformat{\section}
+  {\color{antiquefuchsia}\normalfont\Large\bfseries}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\color{antiquefuchsia}\normalfont\large\bfseries}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\color{antiquefuchsia}\normalfont\normalsize\bfseries}
+  {\thesubsubsection}{1em}{}
+
+% Cambiar color de ítems en listas numeradas
+\setlist[enumerate]{label=\textcolor{antiquefuchsia}{\arabic*.}, left=1.5em}
+\setlist[itemize]{label=\textcolor{antiquefuchsia}{\alph*}, left=1.5em}
+\setlist[itemize]{label=\textcolor{antiquefuchsia}{\textbullet}, left=1.5em}
 
 
 \begin{document}
@@ -32,7 +141,7 @@
 {\color{antiquefuchsia} 
 \textsc{\Large Morales Galván María Paola}}\\[0.7em]
   \textit{\Large 323073406\\[0.5em] }
-  \textit{\Large 25/09/2026}    
+  \textit{\Large 28/09/2026}    
  \\[0.1em] 
 \rule{\linewidth}{0.4pt}\\[2em]
 
@@ -62,53 +171,124 @@
 \end{center}
 \end{titlepage}
 
-\maketitle
-
-\section{Resumen}
+\section*{Resumen}
 
 En este proyecto realice un sistema  de chat para comunicación en tiempo real,  para el cual fue necesario la creación de un servidor (programado en Golang) y un cliente (programado en C\#) los cuales se comunican mediante el formato JSON. Es importante destacar que la implementación actual tiene como objetivo un proyecto escolar por lo que  no cuenta con ningun protocolo de seguridad ni mecanismos de autenticación,. Asimismo, los datos y nombres proporcinados a lo largo de este reporte son ejemplos meramente ilustrativos.
 
 
-\section{Introducción}
+\section*{Introducción}
 
 En el proyecto se realizo un sistema de comunicación en tiempo real, se utilizaron 2 lenguajes de programación distintos: Go (Golang) para implementar el servidor y C\# para el desarrollo del cliente, agregando sistema de construcción Meson para administrar la compilación del cliente.
 
-\subsection{Servidor - Golang}
+\subsubsection*{Servidor - Golang}
 
-Go es un lenguaje de programación compilado, de codigo abierto desarollado por Google en 2007 y lanzado en 2009 por Robert Griesemer, Rob Pike y Ken Thompson.
-
+Go es un lenguaje de programación compilado, de codigo abierto desarollado por Google en 2007 y lanzado en 2009 por Robert Griesemer, Rob Pike y Ken Thompson.\\
 La razón principal para elegir este lenguaje para el servidor se debio a que su modelo de concurrencia mediane gorutines permite gestionar varias conexiones TCP de manera simultanea y su paquete net que facilita la creación de listeners y sockets
 
-\subsection{Cliente - C\#}
+\subsubsection*{Cliente - C\#}
 
-C\# es un lenguaje de programcación compilado, fuertemente tipado y orientado a objetos creado por Microsoft como parte de la platamorma NET
-
+C\# es un lenguaje de programcación compilado, fuertemente tipado y orientado a objetos creado por Microsoft como parte de la platamorma NET.\\
 Esté lenguaje se eligio ya que sus librerias de red nativas permiten crear y gestionar conexiones por sockets de manera directa e intuitiva, ademas cuenta con herramientas integradas de serialización y deserialización de estructuras JSON a objetos de C\#
 
-\subsection{Sistema de construcción del Cliente (Meson)}
+\subsubsection*{Sistema de construcción del Cliente (Meson)}
 
 
-Meson es un sistema de construcción (build system) de código abierto diseñado para ser extremadamente rápido, amigable e independiente de la plataforma.
-
+Meson es un sistema de construcción (build system) de código abierto diseñado para ser extremadamente rápido, amigable e independiente de la plataforma.\\
 Se integro Meson al cliente por su facilidad la administración de dependencias y permite definir reglas claras en su archivo de configuración (meson.build) para general el ejecutable del proyecto sin necesidad de ejecutar comandos complejos para compilarlo\\ \\
 Ambos componentes se comunican a través del protocolo TCP utilizando la serialización en formato  JSON como estandar en el intercambio de datos. Y no cuenta con verificación de identidad ni protocolos de seguridad.
 
 \newpage
 
-\section{Analisis y Diseño (Modelo)}
+\section*{Analisis y Diseño (Modelo)}
 
 En esta seción desglosaremos como se hizo el analisis y diseño del proyecto
 
-\subection{Analisis}
+Utilizaremos el siguiente protocolo para el proyecto:
 
-El proyecto nos pide hacer un chat, un servidor que pueda recibir multiples clientes y un cliente que sea capaz de unirse al servidor. Sabiendo esto podemos dividir nuestro proyecto en 2 partes fundamentales, el servidor y el cliente.
+\subsubsection*{Solicitudes del cliente}
+
+  \begin{itemize}
+  \item \pb{IDENTIFY:} Para identificar al usuario con el servidor, con la propiedad \hyperlink{param:username}{\textit{username}}
+  \item \pb{STATUS:} Cambia el estado de un usuario por (ACTIVE, AWAY o BUSY), con la propiedad \hyperlink{param:status}{\textit{status}}
+  \item \pb{USERS:} Solicita la lista de usuarios en el chat
+  \item \pb{TEXT:} Manda un mensaje en privado a un usuario, con las propiedades \hyperlink{param:username}{\textit{username}}, \hyperlink{param:text}{\textit{text}}
+  \item \pb{PUBLIC\_TEXT:} Manda un mnesaje a todos los usuarios en el chat, con la propiedad \hyperlink{param:text}{\textit{text}}
+  \item \pb{NEW\_ROOM:} Crea un cuarto privado, con la propiedad \hyperlink{param:roomname}{\textit{roomname}}
+  \item \pb{INVITE:} Invita usuarios al cuarto, con las propiedades \hyperlink{param:roomname}{\textit{roomname}}, \hyperlink{param:usernames}{\textit{usernames}}
+  \item \pb{JOIN\_ROOM:} Une al usuario al cuarto siempre y cuando haya sido invitado previamente, con la propiedad \hyperlink{param:roomname}{\textit{roomname}}
+  \item \pb{ROOM\_USERS:} Solicita la lista de usuarios en un cuarto, con la propiedad \hyperlink{param:roomname}{\textit{roomname}}
+  \item \pb{ROOM\_TEXT:} Manda un mensaje dentro de un cuarto, con las propiedades \hyperlink{param:roomname}{\textit{roomname}}, \hyperlink{param:text}{\textit{text}}
+  \item \pb{LEAVE\_ROOM:} Solicita dejar un cuarto, con la propiedad \hyperlink{param:roomname}{\textit{roomname}}
+  \item \pb{DISCONNECT:} Desconecta al usuario del chat
+  \end{itemize}
+
+\subsubsection*{Notificaciones del servidor}
+
+\begin{itemize}
+  \item \pb{RESPONSE:} Respuesta directa a una solicitud del cliente, con las propiedades \hyperlink{param:operation}{\textit{operation}}, \hyperlink{param:result}{\textit{result}}, \hyperlink{param:extra}{\textit{extra}}
+  \item \pb{NEW\_USER:} Notifica que se unio un nuevo usuario al chat, con la propiedad \hyperlink{param:username}{\textit{username}}
+  \item \pb{NEW\_STATUS:} Notifica que algun usuario actualizó su estado a (ACTIVE, AWAY o BUSY), con las propiedades \hyperlink{param:username}{\textit{username}}, \hyperlink{param:status}{\textit{status}}
+  \item \pb{USER\_LIST:} Regresa la lista de usuarios del chat, con la propiedad \hyperlink{param:users}{\textit{users}}
+  \item \pb{TEXT\_FROM:} Notifica que algun usuaio mando un mensaje en privado, con las propiedades \hyperlink{param:username}{\textit{username}}, \hyperlink{param:text}{\textit{text}}
+  \item \pb{PUBLIC\_TEXT\_FROM:} Notifica que algun usuario mando un mensaje al chat grupal, con las propiedades \hyperlink{param:username}{\textit{username}}, \hyperlink{param:text}{\textit{text}}
+  \item \pb{JOINED\_ROOM:} Notifica que un usuario se unio a un cuarto, con las propiedades \hyperlink{param:roomname}{\textit{roomname}}, \hyperlink{param:username}{\textit{username}}  
+  \item \pb{ROOM\_USER\_LIST:} Regresa la lista de usuarios en un cuarto, con las propiedades \hyperlink{param:roomname}{\textit{roomname}}, \hyperlink{param:users}{\textit{users}}
+  \item \pb{ROOM\_TEXT\_FROM:} Notifica que algun usuario mando un mensaje a un cuarto, con las propiedades \hyperlink{param:roomname}{\textit{roomname}}, \hyperlink{param:username}{\textit{username}}, \hyperlink{param:text}{\textit{text}}
+  \item \pb{LEFT\_ROOM:} Notifica que un usuario abandono un cuarto, con las propiedades \hyperlink{param:roomname}{\textit{roomname}}, \hyperlink{param:username}{\textit{username}} 
+  \item \pb{DISCONNECTED:} Notifica que un usuario se desconecto del chat, con la propiedad \hyperlink{param:username}{\textit{username}} 
+  \end{itemize}
+
+\subsubsection*{Respuestas del servidor}
+  
+  \begin{itemize}
+  \item \pb{SUCCESS:} Indica que se ejecuto la acción con exito
+  \item \pb{USER\_ALREADY\_EXISTS:} Indica que el nombre de usuario ya existe en el servidor
+  \item \pb{NO\_SUCH\_USER:} Indica que el usuario no existe en el chat
+  \item \pb{ROOM\_ALREADY\_EXISTS:} Indica que ya existe un cuarto con el nombre
+  \item \pb{NO\_SUCH\_ROOM:} Indica que el cuarto no existe
+  \item \pb{NOT\_INVITED:} Indica que no has sido invitado al cuarto
+  \item \pb{NOT\_JOINED:} Indica que el usuario no se ha unido al cuarto
+  \item \pb{NOT\_IDENTIFIED:} Indica que el usuario no se ha identificado
+  \end{itemize}
+
+\subsubsection*{Propiedades}
+
+  \begin{itemize}
+  \item \hypertarget{param:username}{\pb{username:}} Nombre de usuario del cliente
+  \item \hypertarget{param:status}{\pb{status:}} Estado del cliente
+  \item \hypertarget{param:text}{\pb{text:}} Mensaje que el cliente quiere enviar
+  \item \hypertarget{param:roomname}{\pb{roomname:}} Nombre del cuarto
+  \item \hypertarget{param:usernames}{\pb{usernames:}} Nombre de los usuarios
+  \item \hypertarget{param:users}{\pb{users:}} Lista de usuarios
+  \item \hypertarget{param:operation}{\pb{operation:}} Solicitud que se intento realizar
+  \item \hypertarget{param:result}{\pb{result:}} Resultado de la solicitud
+  \item \hypertarget{param:extra}{\pb{extra:}} Información extra, usualemte el nombre de usuario o sala
+  \end{itemize}
+
+\subsection*{Analisis}
+
+El proyecto nos pide hacer un chat, un servidor que pueda recibir multiples clientes y un cliente que sea capaz de unirse al servidor. Sabiendo esto podemos dividir nuestro proyecto en 2 partes fundamentales, el servidor y el cliente.\\\\
 
 Por un lado el servidor tiene que ser capaz de realizar distintas funciones:
 
 \begin{itemize}
-\item Recibir 
-\item and like this.
+\item Recibir y gestionar conexiones
+\item Mantener la concurrencia de las conexiones sin que interfiera con otros clientes
+\item Administrar las salas y los usuarios en el chat
+\item Recibir e interpretar mensajes con formato JSON
+\item Enviar y contruir mensajes en formato JSON
 \end{itemize}
+
+Por el otro lado, el cliente debe cumplir con:
+
+
+\begin{itemize}
+\item Estableces la conexión con el servidor
+\item Escuchar los mensajes mandados por el servidor y las peticiones del cliente
+\item Interpretar las acciones solicitadas por el usuario
+\item Enviar y contruir mensajes en formato JSON
+\end{itemize}
+
 
 
 \end{document}
