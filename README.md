@@ -15,14 +15,12 @@ Para compilar y ejecutar el proyecto se requiere contar con las siguientes herra
 
 Navega a la carpeta del servidor e inícialo directamente con el entorno de Go:
 
-# Para compilar:
      go run . 1234 --Número de puerto
 
 ### 2. Cliente (C#)
 
 Navega a la carpeta del cliente e utiliza Meson para compilar el proyecto:
 
-# Para compilar:
      meson setup build	
      meson compile -C build
     ./build/cliente.exe -i localhost -p 1234 --Dirección ip y puerto
